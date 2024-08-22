@@ -10,15 +10,29 @@
       flake-utils,
       ...
     }:
+    let
+      makeBits =
+        pkgs:
+        pkgs.agdaPackages.mkDerivation {
+          version = "0.1";
+          pname = "agda-bits";
+          src = builtins.path {
+            path = ./.;
+            name = "agda-bits-src";
+          };
+          buildInputs = [ ];
+          meta = { };
+        };
+    in
     flake-utils.lib.eachDefaultSystem (
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
       in
       {
-        devShell = pkgs.mkShell {
-          buildInputs = [ (pkgs.agda.withPackages (ps: [ ps.standard-library ])) ];
-        };
+        packages.agdaBits = makeBits pkgs;
+        packages.default = self.packages.${system}.agdaBits;
+        devShell = pkgs.mkShell { buildInputs = [ (pkgs.agda.withPackages (ps: [ ])) ]; };
       }
     );
 }

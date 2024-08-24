@@ -215,56 +215,196 @@ fromVec {n = m} xs = m , xs
 length' : {A : Set} → List' A → Nat
 length' = fstΣ
 
--- For any type A and for any x of type, the constructor refl provides evidence that x ≡ x.
+-- 3. The Curry-Howard correspondence
+
+-- Propositional Logic
+
+-- Exercise 3.1
+
+data Either (A : Set) (B : Set) : Set where
+  left : A → Either A B
+  right : B → Either A B
+
+cases : {A B C : Set} → Either A B → (A → C) → (B → C) → C
+cases (left a) f g = f a
+cases (right b) f g = g b
+
+-- Truth
+data ⊤ : Set where
+  tt : ⊤
+
+-- Falsity
+data ⊥ : Set where
+  -- no constructors
+
+-- The principle of explosion (also known under the latin name “ex
+-- falso quodlibet”, or “from falsity follows anything”) tells us we
+-- can can get a proof absurd p of any proposition we want.
+--
+-- The special pattern () used to indicate this is called an absurd
+-- pattern, and the clause is called an absurd clause. Absurd patterns
+-- are used to indicate to Agda that there are no possible inputs of a
+-- given type, but we cannot just skip the clause since there would be
+-- no other clauses left.
+absurd : {A : Set} → ⊥ → A
+absurd ()
+
+-- P implies P
+proof1 : {P : Set} → P → P
+proof1 p = p
+
+-- If ((P implies Q) and (Q implies R)) then (P implies R)
+proof2 : {P Q R : Set} → (P → Q) × (Q → R) → (P → R)
+proof2 (f , g) = λ x -> g (f x)
+
+-- If ((P or Q) implies R) then ((P implies R) and (Q implies R))
+proof3 : {P Q R : Set} → (Either P Q → R) → (P → R) × (Q → R)
+proof3 f = (λ x → f (left x)) , (λ y → f (right y))
+
+-- Exercise 3.2
+
+-- If A then (B implies A)
+proof4 : {A B : Set} → A → (B → A)
+proof4 a = λ _ → a
+
+-- If (A and true) then (A or false)
+proof5 : {A : Set} → (A × ⊤) → Either A ⊥
+proof5 (a , tt) = left a
+
+-- If (A implies (B implies C)), then ((A and B) implies C)
+proof6 : {A B C : Set} → (A → (B → C)) → ((A × B) → C)
+proof6 f = λ x → (f (fst x)) (snd x)
+
+-- If (A and (B or C)), then either (A and B) or (A and C)
+proof7 : {A B C : Set} → (A × Either B C) → Either (A × B) (A × C)
+proof7 (a , left b) = left (a  , b)
+proof7 (a , right c) = right (a , c)
+
+-- If ((A implies C) and (B implies D)), then ((A and B) implies (C and D))
+proof8 : {A B C D : Set} → ((A → C) × (B → D)) → ((A × B) → (C × D))
+proof8 (f , g) = λ x → (f (fst x), g (snd x))
+
+-- Exercise 3.2
+
+proof9 : {P : Set} → (Either P (P → ⊥) → ⊥) → ⊥
+proof9 f = f (right (λ p → f (left p)))
+
+-- Predicate Logic
+
+data IsEven : Nat → Set where
+  zeroIsEven : IsEven zero
+  sucsucIsEven : {n : Nat} → IsEven n → IsEven (suc (suc n))
+
+6-is-even : IsEven 6
+6-is-even = sucsucIsEven (sucsucIsEven (sucsucIsEven zeroIsEven))
+
+7-is-not-even : IsEven 7 → ⊥
+7-is-not-even (sucsucIsEven (sucsucIsEven (sucsucIsEven ())))
+
+data IsTrue : Bool → Set where
+  trueIsTrue : IsTrue true
+
+_=Nat_ : Nat → Nat → Bool
+zero =Nat zero = true
+zero =Nat suc y = false
+suc x =Nat zero = false
+suc x =Nat suc y = x =Nat y
+
+length-is-3 : IsTrue (length (1 :: 2 :: 3 :: []) =Nat 3)
+length-is-3 = trueIsTrue
+
+-- Universal and existential quantifiers
+
+double : Nat → Nat
+double zero = zero
+double (suc n) = suc (suc (double n))
+
+double-is-even : (n : Nat) → IsEven (double n)
+double-is-even zero = zeroIsEven
+double-is-even (suc m) = sucsucIsEven (double-is-even m)
+
+n-equals-n : (n : Nat) → IsTrue (n =Nat n)
+n-equals-n zero = trueIsTrue
+n-equals-n (suc m) = n-equals-n m
+
+half-a-dozen : Σ Nat (λ n → IsTrue ((n + n) =Nat 12))
+half-a-dozen = 6 , trueIsTrue
+
+zero-or-suc : (n : Nat) → Either (IsTrue (n =Nat 0)) (Σ Nat (λ m → IsTrue (n =Nat (suc m))))
+zero-or-suc zero = left trueIsTrue
+zero-or-suc (suc m) = right (m , n-equals-n m)
+
+-- The identity type
 data _≡_ {A : Set} : A → A → Set where
   refl : {x : A} → x ≡ x
 {-# BUILTIN EQUALITY _≡_ #-}
 
 infix 4 _≡_
 
-module tests where
-  
-  4+5-is-9 : 4 + 5 ≡ 9
-  4+5-is-9 = refl
-  
-  0+1-is-1 : 0 + 1 ≡ 1
-  0+1-is-1 = refl
+one-plus-one : 1 + 1 ≡ 2
+one-plus-one = refl
 
-  halve-0-is-0 : halve 0 ≡ 0
-  halve-0-is-0 = refl
-  
-  halve-1-is-0 : halve 1 ≡ 0
-  halve-1-is-0 = refl
-  
-  halve-2-is-1 : halve 2 ≡ 1
-  halve-2-is-1 = refl
-  
-  halve-3-is-1 : halve 3 ≡ 1
-  halve-3-is-1 = refl
-  
-  halve-4-is-2 : halve 4 ≡ 2
-  halve-4-is-2 = refl
-  
-  halve-8-is-4 : halve 8 ≡ 4
-  halve-8-is-4 = refl
-  
-  halve-9-is-4 : halve 9 ≡ 4
-  halve-9-is-4 = refl
-  
-  halve-23-is-11 : halve 23 ≡ 11
-  halve-23-is-11 = refl
-  
-  halve-24-is-12 : halve 24 ≡ 12
-  halve-24-is-12 = refl
-  
-  9*0-is-0 : 9 * 0 ≡ 0
-  9*0-is-0 = refl
-  
-  9*1-is-9 : 9 * 1 ≡ 9
-  9*1-is-9 = refl
-  
-  9*3-is-27 : 9 * 3 ≡ 27
-  9*3-is-27 = refl
+zero-not-one : 0 ≡ 1 → ⊥
+zero-not-one ()
+
+id-returns-input : {A : Set} → (x : A) → id x ≡ x
+id-returns-input x = refl
+
+-- symmetry of equality
+sym : {A : Set} {x y : A} → x ≡ y → y ≡ x
+sym refl = refl
+
+-- transitivity of equality
+trans : {A : Set} {x y z : A} → x ≡ y → y ≡ z → x ≡ z
+trans refl refl = refl
+
+-- congruence of equality
+cong : {A B : Set} {x y : A} → (f : A → B) → x ≡ y → f x ≡ f y
+cong f refl = refl
+
+module tests where
+
+  4-plus-5 : 4 + 5 ≡ 9
+  4-plus-5 = refl
+
+  0-plus-1 : 0 + 1 ≡ 1
+  0-plus-1 = refl
+
+  halve-0 : halve 0 ≡ 0
+  halve-0 = refl
+
+  halve-1 : halve 1 ≡ 0
+  halve-1 = refl
+
+  halve-2 : halve 2 ≡ 1
+  halve-2 = refl
+
+  halve-3 : halve 3 ≡ 1
+  halve-3 = refl
+
+  halve-4 : halve 4 ≡ 2
+  halve-4 = refl
+
+  halve-8 : halve 8 ≡ 4
+  halve-8 = refl
+
+  halve-9 : halve 9 ≡ 4
+  halve-9 = refl
+
+  halve-23 : halve 23 ≡ 11
+  halve-23 = refl
+
+  halve-24 : halve 24 ≡ 12
+  halve-24 = refl
+
+  9-times-0 : 9 * 0 ≡ 0
+  9-times-0 = refl
+
+  9-times-1 : 9 * 1 ≡ 9
+  9-times-1 = refl
+
+  9-times-3 : 9 * 3 ≡ 27
+  9-times-3 = refl
 
   _ : (1 :: 2 :: []) ++ (3 :: 4 :: []) ≡ (1 :: 2 :: 3 :: 4 :: [])
   _ = refl
@@ -318,6 +458,9 @@ module tests where
   vs : Vec Nat 3
   vs = 1 :: 2 :: 3 :: []
 
+  _ : toVec (toList' xs) ≡ vs
+  _ = refl
+
   vs' : List' Nat
   vs' = 3 , vs
 
@@ -325,7 +468,4 @@ module tests where
   _ = refl
 
   _ : fromVec (toVec vs') ≡ vs'
-  _ = refl
-
-  _ : toVec (toList' xs) ≡ vs
   _ = refl

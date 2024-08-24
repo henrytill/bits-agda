@@ -469,3 +469,536 @@ module tests where
 
   _ : fromVec (toVec vs') ≡ vs'
   _ = refl
+
+-- 4. Equational reasoning in Agda
+
+begin_ : {A : Set} → {x y : A} → x ≡ y → x ≡ y
+begin p = p
+
+_end : {A : Set} → (x : A) → x ≡ x
+x end = refl
+
+_=⟨_⟩_ : {A : Set} → (x : A) → {y z : A} → x ≡ y → y ≡ z → x ≡ z
+x =⟨ p ⟩ q = trans p q
+
+_=⟨⟩_ : {A : Set} → (x : A) → {y : A} → x ≡ y → x ≡ y
+x =⟨⟩ q = x =⟨ refl ⟩ q
+
+infix 1 begin_
+infix 3 _end
+infixr 2 _=⟨_⟩_
+infixr 2 _=⟨⟩_
+
+-- Simple examples
+
+[_] : {A : Set} → A → List A
+[ x ] = x :: []
+
+reverse : {A : Set} → List A → List A
+reverse [] = []
+reverse (x :: xs) = reverse xs ++ [ x ]
+
+reverse-singleton : {A : Set} (x : A) → reverse [ x ] ≡ [ x ]
+reverse-singleton x =
+  begin
+    reverse [ x ]
+  =⟨⟩ -- definition of [_]
+    reverse (x :: [])
+  =⟨⟩ -- applying reverse (second clause)
+    reverse [] ++ [ x ]
+  =⟨⟩ -- applying reverse (first clause)
+    [] ++ [ x ]
+  =⟨⟩ -- applying _++_
+    [ x ]
+  end
+
+-- Proof by cases and induction
+
+not-not : (b : Bool) → not (not b) ≡ b
+not-not false =
+  begin
+    not (not false)
+  =⟨⟩ -- applying the inner not
+    not true
+  =⟨⟩ -- applying not
+    false
+  end
+not-not true =
+  begin
+    not (not true)
+  =⟨⟩ -- applying the inner not
+    not false
+  =⟨⟩ -- applying not
+    true
+  end
+
+add-n-zero : (n : Nat) → n + zero ≡ n
+add-n-zero zero =
+  begin
+    zero + zero
+  =⟨⟩ -- applying +
+    zero
+  end
+add-n-zero (suc n) =
+  begin
+    (suc n) + zero
+  =⟨⟩ -- applying +
+    suc (n + zero)
+  =⟨ cong suc (add-n-zero n) ⟩ -- using induction hypothesis
+    suc n
+  end
+
+-- Exercise 4.1
+
+add-m-suc-n : (m n : Nat) → m + suc n ≡ suc (m + n)
+add-m-suc-n zero n =
+  begin
+    zero + suc n
+  =⟨⟩
+    suc n
+  =⟨⟩
+    suc (zero + n)
+  end
+add-m-suc-n (suc m) n =
+  begin
+    suc m + suc n
+  =⟨⟩
+    suc (m + suc n)
+  =⟨ cong suc (add-m-suc-n m n) ⟩
+    suc (suc (m + n))
+  =⟨⟩
+    suc ((suc m) + n)
+  end
+
+commutativity-of-add : (m n : Nat) →  m + n ≡ n + m
+commutativity-of-add zero n =
+  begin
+    zero + n
+  =⟨⟩
+    n
+  =⟨ sym (add-n-zero n) ⟩
+    n + zero
+  end
+commutativity-of-add (suc m) n =
+  begin
+    suc m + n
+  =⟨⟩
+    suc (m + n)
+  =⟨ cong suc (commutativity-of-add m n) ⟩
+    suc (n + m)
+  =⟨ sym (add-m-suc-n n m) ⟩
+    n + suc m
+  end
+
+-- Proof that the addition of natural numbers is associative
+add-assoc : (x y z : Nat) → x + (y + z) ≡ (x + y) + z
+add-assoc zero y z =
+  begin
+    zero + (y + z)
+  =⟨⟩ -- applying the outer add
+    y + z
+  =⟨⟩ -- unapplying add
+    (zero + y) + z
+  end
+add-assoc (suc x) y z =
+  begin
+    (suc x) + (y + z)
+  =⟨⟩                             -- applying the outer add
+    suc (x + (y + z))
+  =⟨ cong suc (add-assoc x y z) ⟩ -- using the induction hypothesis
+    suc ((x + y) + z)
+  =⟨⟩                             -- unapplying the outer add
+    (suc (x + y)) + z
+  =⟨⟩                             -- unapplying the outer add
+    ((suc x) + y) + z
+  end
+
+-- Induction on lists
+
+-- Exercise 4.3
+append-[] : {A : Set} → (xs : List A) → xs ++ [] ≡ xs
+append-[] [] =
+  begin
+    [] ++ []
+  =⟨⟩
+    []
+  end
+append-[] (x :: xs) =
+  begin
+    (x :: xs) ++ []
+  =⟨⟩                              -- applying ++
+    x :: (xs ++ [])
+  =⟨ cong (x ::_) (append-[] xs) ⟩ -- using induction hypothesis
+    x :: xs
+  end
+
+-- Exercise 4.3
+append-assoc : {A : Set} → (xs ys zs : List A) → (xs ++ ys) ++ zs ≡ xs ++ (ys ++ zs)
+append-assoc [] ys zs =
+  begin
+    ([] ++ ys) ++ zs
+  =⟨⟩
+    ys ++ zs
+  =⟨⟩
+    [] ++ (ys ++ zs)
+  end
+append-assoc (x :: xs) ys zs =
+  begin
+    ((x :: xs) ++ ys) ++ zs
+  =⟨⟩                                       -- applying ++
+    (x :: (xs ++ ys)) ++ zs
+  =⟨⟩                                       -- applying ++
+    x :: ((xs ++ ys) ++ zs)
+  =⟨ cong (x ::_) (append-assoc xs ys zs) ⟩ -- using induction hypothesis
+    x :: (xs ++ (ys ++ zs))
+  =⟨⟩                                       -- unapplying ++
+    (x :: xs) ++ (ys ++ zs)
+  end
+
+reverse-reverse : {A : Set} → (xs : List A) → reverse (reverse xs) ≡ xs
+reverse-reverse [] =
+  begin
+    reverse (reverse [])
+  =⟨⟩ -- applying inner reverse
+    reverse []
+  =⟨⟩ -- applying reverse
+    []
+  end
+reverse-reverse (x :: xs) =
+  begin
+    reverse (reverse (x :: xs))
+  =⟨⟩                                            -- applying the inner reverse
+    reverse (reverse xs ++ [ x ])
+  =⟨ reverse-distributivity (reverse xs) [ x ] ⟩ -- distributivity (see below)
+    reverse [ x ] ++ reverse (reverse xs)
+  =⟨⟩                                            -- reverse singleton list
+    [ x ] ++ reverse (reverse xs)
+  =⟨⟩                                            -- definition of ++
+    x :: reverse (reverse xs)
+  =⟨ cong (x ::_) (reverse-reverse xs) ⟩         -- using induction hypothesis
+    x :: xs
+  end
+  where
+    reverse-distributivity : {A : Set} → (xs ys : List A) → reverse (xs ++ ys) ≡ reverse ys ++ reverse xs
+    reverse-distributivity [] ys =
+      begin
+        reverse ([] ++ ys)
+      =⟨⟩                               -- applying ++
+        reverse ys
+      =⟨ sym (append-[] (reverse ys)) ⟩ -- see append-[] lemma
+        reverse ys ++ []
+      =⟨⟩                               -- unapplying reverse
+        reverse ys ++ reverse []
+      end
+    reverse-distributivity (x :: xs) ys =
+      begin
+        reverse ((x :: xs) ++ ys)
+      =⟨⟩                                                  -- applying ++
+        reverse (x :: (xs ++ ys))
+      =⟨⟩                                                  -- applying reverse
+        reverse (xs ++ ys) ++ reverse [ x ]
+      =⟨⟩                                                  -- applying reverse
+        reverse (xs ++ ys) ++ [ x ]
+      =⟨ cong (_++ [ x ]) (reverse-distributivity xs ys) ⟩ -- using induction hypothesis
+        (reverse ys ++ reverse xs) ++ [ x ]
+      =⟨ append-assoc (reverse ys) (reverse xs) [ x ] ⟩    -- using associativity of ++
+        reverse ys ++ (reverse xs ++ [ x ])
+      =⟨⟩                                                  -- unapplying inner ++
+        reverse ys ++ (reverse (x :: xs))
+      end
+
+map-id : {A : Set} (xs : List A) → map id xs ≡ xs
+map-id [] =
+  begin
+    map id []
+  =⟨⟩                           -- applying map
+    []
+  end
+map-id (x :: xs) =
+  begin
+    map id (x :: xs)
+  =⟨⟩                           -- applying map
+    id x :: map id xs
+  =⟨⟩                           -- applying id
+    x :: map id xs
+  =⟨ cong (x ::_) (map-id xs) ⟩ -- using induction hypothesis
+    x :: xs
+  end
+
+_◦_ : {A B C : Set} → (B → C) → (A → B) → (A → C)
+g ◦ h = λ x → g (h x)
+
+map-compose : {A B C : Set} (f : B → C) (g : A → B) (xs : List A) → map (f ◦ g) xs ≡ map f (map g xs)
+map-compose f g [] =
+  begin
+    map (f ◦ g) []
+  =⟨⟩                       -- applying map
+    []
+  =⟨⟩                       -- unapplying map
+    map f []
+  =⟨⟩                       -- unapplying map
+    map f (map g [])
+  end
+map-compose f g (x :: xs) =
+  begin
+    map (f ◦ g) (x :: xs)
+  =⟨⟩                                          -- applying map
+    (f ◦ g) x :: map (f ◦ g) xs
+  =⟨⟩                                          -- applying function composition
+    f (g x) :: map (f ◦ g) xs
+  =⟨ cong (f (g x) ::_) (map-compose f g xs) ⟩ -- using induction hypothesis
+    f (g x) :: map f (map g xs)
+  =⟨⟩                                          -- unapplying map
+    map f (g x :: map g xs)
+  =⟨⟩                                          -- unapplying map
+    map f (map g (x :: xs))
+  end
+
+-- Exercise 4.4
+length-map : {A B : Set} (f : A → B) (xs : List A) → length (map f xs) ≡ length xs
+length-map f [] =
+  begin
+    length (map f [])
+  end
+length-map f (x :: xs) = 
+  begin
+    length (map f (x :: xs))
+  =⟨⟩                                       -- applying map
+    length (f x :: map f xs)
+  =⟨⟩                                       -- applying length
+    1 + length (map f xs)
+  =⟨ cong (λ n → 1 + n) (length-map f xs) ⟩ -- using induction hypothesis
+    1 + length xs
+  =⟨⟩
+    length (x :: xs)
+  end
+
+-- Exercise 4.5
+take : {A : Set} → (n : Nat) → List A → List A
+take n [] = [] 
+take zero _ = []
+take (suc n) (x :: xs) = x :: take n xs
+
+drop : {A : Set} → (n : Nat) → List A → List A
+drop n [] = []
+drop zero xs = xs
+drop (suc n) (x :: xs) = drop n xs
+
+take-drop : {A : Set} → (n : Nat) → (xs : List A) → take n xs ++ drop n xs ≡ xs
+take-drop n [] = 
+  begin
+    take n [] ++ drop n []
+  =⟨⟩                           -- applying take
+    [] ++ drop n []
+  =⟨⟩                           -- applying drop
+    [] ++ []
+  =⟨⟩                           -- applying ++
+    []
+  end
+take-drop zero (x :: xs) = 
+  begin
+    take zero (x :: xs) ++ drop zero (x :: xs)
+  =⟨⟩                           -- applying take
+    [] ++ drop zero (x :: xs)
+  =⟨⟩                           -- applying drop
+    [] ++ (x :: xs)
+  =⟨⟩                           -- applying ++
+    (x :: xs)
+  end
+take-drop (suc n) (x :: xs) = 
+  begin
+    take (suc n) (x :: xs) ++ drop (suc n) (x :: xs)
+  =⟨⟩                                -- applying take
+    (x :: take n xs) ++ drop (suc n) (x :: xs)
+  =⟨⟩                                -- applying drop
+    (x :: take n xs) ++ drop n xs
+  =⟨⟩                                -- applying ++
+    x :: (take n xs ++ drop n xs)
+  =⟨ cong (x ::_) (take-drop n xs) ⟩ -- using induction hypothesis
+    x :: xs
+  end
+
+-- Verifying optimizations
+
+reverse-acc : {A : Set} → List A → List A → List A
+reverse-acc [] ys = ys
+reverse-acc (x :: xs) ys = reverse-acc xs (x :: ys)
+
+reverse' : {A : Set} → List A → List A
+reverse' xs = reverse-acc xs []
+
+reverse'-reverse : {A : Set} → (xs : List A) → reverse' xs ≡ reverse xs
+reverse'-reverse xs = 
+  begin
+    reverse' xs
+  =⟨⟩                           -- definition of reverse'
+    reverse-acc xs []
+  =⟨ reverse-acc-lemma xs [] ⟩  -- using reverse-acc-lemma
+    reverse xs ++ []
+  =⟨ append-[] (reverse xs) ⟩   -- using append-[]
+    reverse xs
+  end
+  where
+    reverse-acc-lemma : {A : Set} → (xs ys : List A) → reverse-acc xs ys ≡ reverse xs ++ ys
+    reverse-acc-lemma [] ys = 
+      begin
+        reverse-acc [] ys
+      =⟨⟩                           -- definition of reverse-acc
+        ys
+      =⟨⟩                           -- unapplying ++
+        [] ++ ys
+      =⟨⟩                           -- unapplying reverse
+        reverse [] ++ ys
+      end
+    reverse-acc-lemma (x :: xs) ys = 
+      begin
+        reverse-acc (x :: xs) ys
+      =⟨⟩                                           -- definition of reverse-acc
+        reverse-acc xs (x :: ys)
+      =⟨ reverse-acc-lemma xs (x :: ys) ⟩           -- using induction hypothesis
+        reverse xs ++ (x :: ys)
+      =⟨⟩                                           -- unapplying ++
+        reverse xs ++ ([ x ] ++ ys)
+      =⟨ sym (append-assoc (reverse xs) [ x ] ys) ⟩ -- using associativity of append
+        (reverse xs ++ [ x ]) ++ ys
+      =⟨⟩                                           -- unapplying reverse
+        reverse (x :: xs) ++ ys
+      end
+
+data Tree (A : Set) : Set where
+  leaf : A → Tree A
+  node : Tree A → Tree A → Tree A
+
+flatten : {A : Set} → Tree A → List A
+flatten (leaf x) = [ x ]
+flatten (node t1 t2) = flatten t1 ++ flatten t2
+
+flatten-acc : {A : Set} → Tree A → List A → List A
+flatten-acc (leaf x) xs = x :: xs
+flatten-acc (node t1 t2) xs = flatten-acc t1 (flatten-acc t2 xs)
+
+flatten' : {A : Set} → Tree A → List A
+flatten' t = flatten-acc t []
+
+flatten-acc-flatten : {A : Set} (t : Tree A) (xs : List A) → flatten-acc t xs ≡ flatten t ++ xs
+flatten-acc-flatten (leaf x) xs = 
+  begin
+    flatten-acc (leaf x) xs
+  =⟨⟩                           -- definition of flatten-acc
+    x :: xs
+  =⟨⟩                           -- unapplying ++
+    [ x ] ++ xs
+  =⟨⟩                           -- unapplying flatten
+    flatten (leaf x) ++ xs
+  end
+flatten-acc-flatten (node l r) xs = 
+  begin
+    flatten-acc (node l r) xs
+  =⟨⟩                                                  -- applying flatten-acc
+    flatten-acc l (flatten-acc r xs)
+  =⟨ flatten-acc-flatten l (flatten-acc r xs) ⟩        -- using IH for l
+    flatten l ++ (flatten-acc r xs)
+  =⟨ cong (flatten l ++_) (flatten-acc-flatten r xs) ⟩ -- using IH for r
+    flatten l ++ (flatten r ++ xs)
+  =⟨ sym (append-assoc (flatten l) (flatten r) xs) ⟩   -- using append-assoc
+    (flatten l ++ flatten r) ++ xs
+  =⟨⟩
+    (flatten (node l r)) ++ xs
+  end
+
+-- Exercise 4.6
+flatten'-flatten : {A : Set} → (t : Tree A) → flatten' t ≡ flatten t
+flatten'-flatten (leaf x) = 
+  begin
+    flatten' (leaf x)
+  =⟨⟩                           -- definition of flatten'
+    flatten-acc (leaf x) []
+  =⟨⟩                           -- applying flatten-acc
+    x :: []
+  =⟨⟩                           -- applying ++
+    [ x ]
+  end
+flatten'-flatten (node l r) = 
+  begin
+    flatten' (node l r)
+  =⟨⟩                                    -- definition of flatten'
+    flatten-acc (node l r) []
+  =⟨ flatten-acc-flatten (node l r) [] ⟩ -- using flatten-acc-flatten
+    flatten (node l r) ++ []
+  =⟨ append-[] (flatten (node l r)) ⟩    -- using append-[]
+    flatten (node l r)
+  end
+
+-- Compiler correctness
+
+data Expr : Set where
+  valE : Nat → Expr
+  addE : Expr → Expr → Expr
+
+eval : Expr → Nat
+eval (valE x) = x
+eval (addE e1 e2) = eval e1 + eval e2
+
+data Op  : Set where
+  PUSH : Nat → Op
+  ADD : Op
+
+Stack = List Nat
+Code = List Op
+
+exec : Code → Stack → Stack
+exec [] s = s
+exec (PUSH x :: c) s = exec c (x :: s)
+exec (ADD :: c) (m :: n :: s) = exec c (n + m :: s)
+exec (ADD :: c) _ = []
+
+-- First version, inefficient and hard to reason about
+-- compile : Expr → Code
+-- compile (valE x) = [ PUSH x ]
+-- compile (addE e1 e2) = compile e1 ++ compile e2 ++ [ ADD ]
+
+-- Second version, much faster and easier to prove correct
+compile' : Expr → Code → Code
+compile' (valE x) c = PUSH x :: c
+compile' (addE e1 e2) c = compile' e1 (compile' e2 (ADD :: c))
+
+compile : Expr → Code
+compile e = compile' e []
+
+compile'-exec-eval : (e : Expr) (s : Stack) (c : Code) → exec (compile' e c) s ≡ exec c (eval e :: s)
+compile'-exec-eval (valE x) s c = 
+  begin
+    exec (compile' (valE x) c) s
+  =⟨⟩                           -- applying compile'
+    exec (PUSH x :: c) s        
+  =⟨⟩                           -- applying exec for PUSH
+    exec c (x :: s)
+  =⟨⟩                           -- unapplying eval for valE
+    exec c (eval (valE x) :: s)
+  end
+compile'-exec-eval (addE e1 e2) s c = 
+  begin
+    exec (compile' (addE e1 e2) c) s
+  =⟨⟩                                                   -- applying compile'
+    exec (compile' e1 (compile' e2 (ADD :: c))) s
+  =⟨ compile'-exec-eval e1 s (compile' e2 (ADD :: c)) ⟩ -- using IH for e1
+    exec (compile' e2 (ADD :: c)) (eval e1 :: s)
+  =⟨ compile'-exec-eval e2 (eval e1 :: s) (ADD :: c)⟩   -- using IH for e2
+    exec (ADD :: c) (eval e2 :: eval e1 :: s)
+  =⟨⟩                                                   -- applying exec for ADD
+    exec c (eval e1 + eval e2 :: s)
+  =⟨⟩                                                   -- unapplying eval for addE
+    exec c (eval (addE e1 e2) :: s)
+  end
+
+compile-exec-eval : (e : Expr) → exec (compile e) [] ≡ [ eval e ]
+compile-exec-eval e =
+  begin
+    exec (compile e) []
+  =⟨ compile'-exec-eval e [] [] ⟩ -- using compile'-exec-eval lemma
+    exec [] (eval e :: [])
+  =⟨⟩                             -- unapplying exec for []
+    eval e :: []
+  =⟨⟩                             -- unapplying [_]
+    [ eval e ]
+  end

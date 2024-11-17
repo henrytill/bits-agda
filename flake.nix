@@ -15,10 +15,10 @@
         pkgs:
         pkgs.agdaPackages.mkDerivation {
           version = "0.1";
-          pname = "agda-bits";
+          pname = "bits";
           src = builtins.path {
             path = ./.;
-            name = "agda-bits-src";
+            name = "bits-src";
           };
           buildInputs = [ ];
           meta = { };

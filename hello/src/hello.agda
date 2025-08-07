@@ -683,11 +683,11 @@ reverse-reverse (x :: xs) =
     reverse-distributivity [] ys =
       begin
         reverse ([] ++ ys)
-      =⟨⟩                               -- applying ++
+      =⟨⟩                                                  -- applying ++
         reverse ys
-      =⟨ sym (append-[] (reverse ys)) ⟩ -- see append-[] lemma
+      =⟨ sym (append-[] (reverse ys)) ⟩                    -- see append-[] lemma
         reverse ys ++ []
-      =⟨⟩                               -- unapplying reverse
+      =⟨⟩                                                  -- unapplying reverse
         reverse ys ++ reverse []
       end
     reverse-distributivity (x :: xs) ys =
@@ -788,21 +788,21 @@ take-drop : {A : Set} → (n : Nat) → (xs : List A) → take n xs ++ drop n xs
 take-drop n [] =
   begin
     take n [] ++ drop n []
-  =⟨⟩                           -- applying take
+  =⟨⟩                                -- applying take
     [] ++ drop n []
-  =⟨⟩                           -- applying drop
+  =⟨⟩                                -- applying drop
     [] ++ []
-  =⟨⟩                           -- applying ++
+  =⟨⟩                                -- applying ++
     []
   end
 take-drop zero (x :: xs) =
   begin
     take zero (x :: xs) ++ drop zero (x :: xs)
-  =⟨⟩                           -- applying take
+  =⟨⟩                                -- applying take
     [] ++ drop zero (x :: xs)
-  =⟨⟩                           -- applying drop
+  =⟨⟩                                -- applying drop
     [] ++ (x :: xs)
-  =⟨⟩                           -- applying ++
+  =⟨⟩                                -- applying ++
     (x :: xs)
   end
 take-drop (suc n) (x :: xs) =
@@ -843,11 +843,11 @@ reverse'-reverse xs =
     reverse-acc-lemma [] ys =
       begin
         reverse-acc [] ys
-      =⟨⟩                           -- definition of reverse-acc
+      =⟨⟩                                           -- definition of reverse-acc
         ys
-      =⟨⟩                           -- unapplying ++
+      =⟨⟩                                           -- unapplying ++
         [] ++ ys
-      =⟨⟩                           -- unapplying reverse
+      =⟨⟩                                           -- unapplying reverse
         reverse [] ++ ys
       end
     reverse-acc-lemma (x :: xs) ys =
@@ -884,11 +884,11 @@ flatten-acc-flatten : {A : Set} (t : Tree A) (xs : List A) → flatten-acc t xs 
 flatten-acc-flatten (leaf x) xs =
   begin
     flatten-acc (leaf x) xs
-  =⟨⟩                           -- definition of flatten-acc
+  =⟨⟩                                                  -- definition of flatten-acc
     x :: xs
-  =⟨⟩                           -- unapplying ++
+  =⟨⟩                                                  -- unapplying ++
     [ x ] ++ xs
-  =⟨⟩                           -- unapplying flatten
+  =⟨⟩                                                  -- unapplying flatten
     flatten (leaf x) ++ xs
   end
 flatten-acc-flatten (node l r) xs =
@@ -911,11 +911,11 @@ flatten'-flatten : {A : Set} → (t : Tree A) → flatten' t ≡ flatten t
 flatten'-flatten (leaf x) =
   begin
     flatten' (leaf x)
-  =⟨⟩                           -- definition of flatten'
+  =⟨⟩                                    -- definition of flatten'
     flatten-acc (leaf x) []
-  =⟨⟩                           -- applying flatten-acc
+  =⟨⟩                                    -- applying flatten-acc
     x :: []
-  =⟨⟩                           -- applying ++
+  =⟨⟩                                    -- applying ++
     [ x ]
   end
 flatten'-flatten (node l r) =
@@ -969,11 +969,11 @@ compile'-exec-eval : (e : Expr) (s : Stack) (c : Code) → exec (compile' e c) s
 compile'-exec-eval (valE x) s c =
   begin
     exec (compile' (valE x) c) s
-  =⟨⟩                           -- applying compile'
+  =⟨⟩                                                   -- applying compile'
     exec (PUSH x :: c) s
-  =⟨⟩                           -- applying exec for PUSH
+  =⟨⟩                                                   -- applying exec for PUSH
     exec c (x :: s)
-  =⟨⟩                           -- unapplying eval for valE
+  =⟨⟩                                                   -- unapplying eval for valE
     exec c (eval (valE x) :: s)
   end
 compile'-exec-eval (addE e1 e2) s c =

@@ -1,5 +1,7 @@
 module hello where
 
+-- from Jesper Cockx "Programming and Proving in Agda" (Version of March 18, 2024)
+
 -- 1. An introduction to Agda for Haskell programmers
 
 data Greeting : Set where

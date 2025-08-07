@@ -24,6 +24,16 @@
               buildInputs = [ ];
               meta = { };
             };
+            prop-logic = afinal.mkDerivation {
+              version = "0.1";
+              pname = "prop-logic";
+              src = builtins.path {
+                path = ./prop-logic;
+                name = "prop-logic-src";
+              };
+              buildInputs = [ afinal.standard-library ];
+              meta = { };
+            };
           }
         );
       };
@@ -38,8 +48,18 @@
       in
       rec {
         packages.hello = pkgs.agdaPackages.hello;
-        packages.default = packages.hello;
-        devShell = pkgs.mkShell { buildInputs = [ (pkgs.agda.withPackages (ps: [ ])) ]; };
+        packages.prop-logic = pkgs.agdaPackages.prop-logic;
+        packages.all = pkgs.symlinkJoin {
+          name = "all";
+          paths = with packages; [
+            hello
+            prop-logic
+          ];
+        };
+        packages.default = packages.all;
+        devShell = pkgs.mkShell {
+          buildInputs = [ (pkgs.agda.withPackages (ps: [ ps.standard-library ])) ];
+        };
       }
     );
 }

@@ -1,0 +1,4 @@
+name: prop-logic
+depend:
+  standard-library
+include: . src

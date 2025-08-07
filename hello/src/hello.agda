@@ -43,6 +43,8 @@ zero * y = zero
 data Bool : Set where
   false true : Bool
 {-# BUILTIN BOOL Bool #-}
+{-# BUILTIN TRUE true #-}
+{-# BUILTIN FALSE false #-}
 
 not : Bool → Bool
 not false = true

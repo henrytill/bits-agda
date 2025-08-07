@@ -14,12 +14,12 @@
       overlay = final: prev: {
         agdaPackages = prev.agdaPackages.overrideScope (
           afinal: aprev: {
-            bits = afinal.mkDerivation {
+            hello = afinal.mkDerivation {
               version = "0.1";
-              pname = "agda-bits";
+              pname = "hello";
               src = builtins.path {
-                path = ./.;
-                name = "agda-bits-src";
+                path = ./hello;
+                name = "hello-src";
               };
               buildInputs = [ ];
               meta = { };
@@ -36,9 +36,9 @@
           overlays = [ overlay ];
         };
       in
-      {
-        packages.agdaBits = pkgs.agdaPackages.bits;
-        packages.default = self.packages.${system}.agdaBits;
+      rec {
+        packages.hello = pkgs.agdaPackages.hello;
+        packages.default = packages.hello;
         devShell = pkgs.mkShell { buildInputs = [ (pkgs.agda.withPackages (ps: [ ])) ]; };
       }
     );

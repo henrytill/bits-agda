@@ -1,0 +1,3 @@
+name: hello
+depend:
+include: . src

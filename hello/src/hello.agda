@@ -263,6 +263,9 @@ proof2 (f , g) = λ x -> g (f x)
 proof3 : {P Q R : Set} → (Either P Q → R) → (P → R) × (Q → R)
 proof3 f = (λ x → f (left x)) , (λ y → f (right y))
 
+proof-and-commutative : {P Q : Set} → (P × Q) → (Q × P)
+proof-and-commutative (p , q) = q , p
+
 -- Exercise 3.2
 
 -- If A then (B implies A)

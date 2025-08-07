@@ -34,6 +34,16 @@
               buildInputs = [ afinal.standard-library ];
               meta = { };
             };
+            sf = afinal.mkDerivation {
+              version = "0.1";
+              pname = "sf";
+              src = builtins.path {
+                path = ./sf;
+                name = "sf-src";
+              };
+              buildInputs = [ afinal.standard-library ];
+              meta = { };
+            };
           }
         );
       };
@@ -49,11 +59,13 @@
       rec {
         packages.hello = pkgs.agdaPackages.hello;
         packages.prop-logic = pkgs.agdaPackages.prop-logic;
+        packages.sf = pkgs.agdaPackages.sf;
         packages.all = pkgs.symlinkJoin {
           name = "all";
           paths = with packages; [
             hello
             prop-logic
+            sf
           ];
         };
         packages.default = packages.all;

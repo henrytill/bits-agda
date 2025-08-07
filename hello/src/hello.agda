@@ -760,7 +760,7 @@ length-map f [] =
   begin
     length (map f [])
   end
-length-map f (x :: xs) = 
+length-map f (x :: xs) =
   begin
     length (map f (x :: xs))
   =⟨⟩                                       -- applying map
@@ -775,7 +775,7 @@ length-map f (x :: xs) =
 
 -- Exercise 4.5
 take : {A : Set} → (n : Nat) → List A → List A
-take n [] = [] 
+take n [] = []
 take zero _ = []
 take (suc n) (x :: xs) = x :: take n xs
 
@@ -785,7 +785,7 @@ drop zero xs = xs
 drop (suc n) (x :: xs) = drop n xs
 
 take-drop : {A : Set} → (n : Nat) → (xs : List A) → take n xs ++ drop n xs ≡ xs
-take-drop n [] = 
+take-drop n [] =
   begin
     take n [] ++ drop n []
   =⟨⟩                           -- applying take
@@ -795,7 +795,7 @@ take-drop n [] =
   =⟨⟩                           -- applying ++
     []
   end
-take-drop zero (x :: xs) = 
+take-drop zero (x :: xs) =
   begin
     take zero (x :: xs) ++ drop zero (x :: xs)
   =⟨⟩                           -- applying take
@@ -805,7 +805,7 @@ take-drop zero (x :: xs) =
   =⟨⟩                           -- applying ++
     (x :: xs)
   end
-take-drop (suc n) (x :: xs) = 
+take-drop (suc n) (x :: xs) =
   begin
     take (suc n) (x :: xs) ++ drop (suc n) (x :: xs)
   =⟨⟩                                -- applying take
@@ -828,7 +828,7 @@ reverse' : {A : Set} → List A → List A
 reverse' xs = reverse-acc xs []
 
 reverse'-reverse : {A : Set} → (xs : List A) → reverse' xs ≡ reverse xs
-reverse'-reverse xs = 
+reverse'-reverse xs =
   begin
     reverse' xs
   =⟨⟩                           -- definition of reverse'
@@ -840,7 +840,7 @@ reverse'-reverse xs =
   end
   where
     reverse-acc-lemma : {A : Set} → (xs ys : List A) → reverse-acc xs ys ≡ reverse xs ++ ys
-    reverse-acc-lemma [] ys = 
+    reverse-acc-lemma [] ys =
       begin
         reverse-acc [] ys
       =⟨⟩                           -- definition of reverse-acc
@@ -850,7 +850,7 @@ reverse'-reverse xs =
       =⟨⟩                           -- unapplying reverse
         reverse [] ++ ys
       end
-    reverse-acc-lemma (x :: xs) ys = 
+    reverse-acc-lemma (x :: xs) ys =
       begin
         reverse-acc (x :: xs) ys
       =⟨⟩                                           -- definition of reverse-acc
@@ -881,7 +881,7 @@ flatten' : {A : Set} → Tree A → List A
 flatten' t = flatten-acc t []
 
 flatten-acc-flatten : {A : Set} (t : Tree A) (xs : List A) → flatten-acc t xs ≡ flatten t ++ xs
-flatten-acc-flatten (leaf x) xs = 
+flatten-acc-flatten (leaf x) xs =
   begin
     flatten-acc (leaf x) xs
   =⟨⟩                           -- definition of flatten-acc
@@ -891,7 +891,7 @@ flatten-acc-flatten (leaf x) xs =
   =⟨⟩                           -- unapplying flatten
     flatten (leaf x) ++ xs
   end
-flatten-acc-flatten (node l r) xs = 
+flatten-acc-flatten (node l r) xs =
   begin
     flatten-acc (node l r) xs
   =⟨⟩                                                  -- applying flatten-acc
@@ -908,7 +908,7 @@ flatten-acc-flatten (node l r) xs =
 
 -- Exercise 4.6
 flatten'-flatten : {A : Set} → (t : Tree A) → flatten' t ≡ flatten t
-flatten'-flatten (leaf x) = 
+flatten'-flatten (leaf x) =
   begin
     flatten' (leaf x)
   =⟨⟩                           -- definition of flatten'
@@ -918,7 +918,7 @@ flatten'-flatten (leaf x) =
   =⟨⟩                           -- applying ++
     [ x ]
   end
-flatten'-flatten (node l r) = 
+flatten'-flatten (node l r) =
   begin
     flatten' (node l r)
   =⟨⟩                                    -- definition of flatten'
@@ -966,17 +966,17 @@ compile : Expr → Code
 compile e = compile' e []
 
 compile'-exec-eval : (e : Expr) (s : Stack) (c : Code) → exec (compile' e c) s ≡ exec c (eval e :: s)
-compile'-exec-eval (valE x) s c = 
+compile'-exec-eval (valE x) s c =
   begin
     exec (compile' (valE x) c) s
   =⟨⟩                           -- applying compile'
-    exec (PUSH x :: c) s        
+    exec (PUSH x :: c) s
   =⟨⟩                           -- applying exec for PUSH
     exec c (x :: s)
   =⟨⟩                           -- unapplying eval for valE
     exec c (eval (valE x) :: s)
   end
-compile'-exec-eval (addE e1 e2) s c = 
+compile'-exec-eval (addE e1 e2) s c =
   begin
     exec (compile' (addE e1 e2) c) s
   =⟨⟩                                                   -- applying compile'

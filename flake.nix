@@ -60,14 +60,14 @@
         packages.hello = pkgs.agdaPackages.hello;
         packages.prop-logic = pkgs.agdaPackages.prop-logic;
         packages.sf = pkgs.agdaPackages.sf;
-        packages.all = pkgs.symlinkJoin {
-          name = "all";
-          paths = with packages; [
+        packages.all = pkgs.agdaPackages.mkLibraryFile (
+          with packages;
+          [
             hello
             prop-logic
             sf
-          ];
-        };
+          ]
+        );
         packages.default = packages.all;
         devShell = pkgs.mkShell {
           buildInputs = [ (pkgs.agda.withPackages (ps: [ ps.standard-library ])) ];

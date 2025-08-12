@@ -1,6 +1,5 @@
 module lf-current.Basics where
 
-open import Data.Empty
 open import Data.Nat.Properties using (+-comm; +-assoc; +-suc)
 open import Relation.Binary.PropositionalEquality
 
@@ -527,28 +526,16 @@ module LateDays where
   ... | true = lower-grade (lower-grade g)
   ... | false = lower-grade (lower-grade (lower-grade g))
 
-  false-not-true : false ≡ true → ⊥
-  false-not-true ()
-
-  true-not-false : true ≡ false → ⊥
-  true-not-false ()
-
   no-penalty-for-mostly-on-time : (late-days : Nat) (g : Grade) →
                                   (late-days <? 9) ≡ true →
                                   apply-late-policy late-days g ≡ g
-  no-penalty-for-mostly-on-time late-days g H with late-days <? 9
-  ... | true = refl
-  ... | false = ⊥-elim (true-not-false (sym H))
+  no-penalty-for-mostly-on-time late-days g H rewrite H = refl
 
   grade-lowered-once : (late-days : Nat) (g : Grade) →
                        (late-days <? 9) ≡ false →
                        (late-days <? 17) ≡ true →
                        apply-late-policy late-days g ≡ lower-grade g
-  grade-lowered-once late-days g H1 H2 with late-days <? 9
-  ... | true = ⊥-elim (false-not-true (sym H1))
-  ... | false with late-days <? 17
-  ... | true = refl
-  ... | false = ⊥-elim (true-not-false (sym H2))
+  grade-lowered-once late-days g H1 H2 rewrite H1 | H2 = refl
 
 data Bin : Set where
   Z : Bin

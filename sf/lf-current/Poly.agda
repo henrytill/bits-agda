@@ -1,15 +1,15 @@
 module lf-current.Poly where
 
-open import Agda.Builtin.Bool
-open import Agda.Builtin.Nat
+open import Data.Nat using (ℕ; suc; zero; _+_; _*_)
+open import Data.Bool using (Bool; true; false; _∨_; _∧_)
 open import Data.List as List using (List; []; _∷_; _++_)
 open import Data.Maybe as Maybe using (Maybe; just; nothing)
 open import Data.Product as Product using (_×_; _,_)
 open import Relation.Binary.PropositionalEquality
 
-open import lf-current.Basics using (minustwo; negb; even; odd; _&&_)
+open import lf-current.Basics using (minustwo; negb; even; odd; _=?_; _<?_)
 
-repeat : {A : Set} → A → Nat → List A
+repeat : {A : Set} → A → ℕ → List A
 repeat x zero = []
 repeat x (suc count) = x ∷ (repeat x count)
 
@@ -32,7 +32,7 @@ test-rev₁ = refl
 test-rev₂ : rev (true ∷ []) ≡ (true ∷ [])
 test-rev₂ = refl
 
-length : {A : Set} → List A → Nat
+length : {A : Set} → List A → ℕ
 length = List.length
 
 test-length : length (1 ∷ 2 ∷ 3 ∷ []) ≡ 3
@@ -70,7 +70,7 @@ split = List.unzip
 test-split : split ((1 , false) ∷ (2 , false) ∷ []) ≡ (1 ∷ 2 ∷ [] , false ∷ false ∷ [])
 test-split = refl
 
-nth-error : {A : Set} → List A → Nat → Maybe A
+nth-error : {A : Set} → List A → ℕ → Maybe A
 nth-error [] _ = nothing
 nth-error (x ∷ xs) zero = just x
 nth-error (x ∷ xs) (suc n) = nth-error xs n
@@ -113,13 +113,13 @@ test-filter₁ : filter even (1 ∷ 2 ∷ 3 ∷ 4 ∷ []) ≡ (2 ∷ 4 ∷ [])
 test-filter₁ = refl
 
 length-is-1 : {A : Set} → List A → Bool
-length-is-1 xs = length xs == 1
+length-is-1 xs = length xs =? 1
 
 test-filter₂ : filter length-is-1
                ((1 ∷ 2 ∷ []) ∷ (3 ∷ []) ∷ (4 ∷ []) ∷ (5 ∷ 6 ∷ 7 ∷ []) ∷ ([]) ∷ (8 ∷ []) ∷ [] ) ≡ ((3 ∷ []) ∷ (4 ∷ []) ∷ (8 ∷ []) ∷ [])
 test-filter₂ = refl
 
-count-odd-members : List Nat → Nat
+count-odd-members : List ℕ → ℕ
 count-odd-members xs = length (filter odd xs)
 
 test-count-odd-members₁ : count-odd-members (1 ∷ 0 ∷ 3 ∷ 1 ∷ 4 ∷ 5 ∷ []) ≡ 4
@@ -134,12 +134,12 @@ test-count-odd-members₃ = refl
 test-anon-fun : do-it-3-times (λ n → n * n) 2 ≡ 256
 test-anon-fun = refl
 
-test-filter₂' : filter (λ xs → length xs == 1)
+test-filter₂' : filter (λ xs → length xs =? 1)
                 ((1 ∷ 2 ∷ []) ∷ (3 ∷ []) ∷ (4 ∷ []) ∷ (5 ∷ 6 ∷ 7 ∷ []) ∷ ([]) ∷ (8 ∷ []) ∷ [] ) ≡ ((3 ∷ []) ∷ (4 ∷ []) ∷ (8 ∷ []) ∷ [])
 test-filter₂' = refl
 
-filter-even-gt-7 : List Nat → List Nat
-filter-even-gt-7 = filter (λ x → (even x) && (7 < x))
+filter-even-gt-7 : List ℕ → List ℕ
+filter-even-gt-7 = filter (λ x → (even x) ∧ (7 <? x))
 
 test-filter-even-gt-7₁ : filter-even-gt-7 (1 ∷ 2 ∷ 6 ∷ 9 ∷ 10 ∷ 3 ∷ 12 ∷ 8 ∷ []) ≡ (10 ∷ 12 ∷ 8 ∷ [])
 test-filter-even-gt-7₁ = refl

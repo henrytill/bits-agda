@@ -1,33 +1,33 @@
 module lf-current.Induct where
 
-open import Agda.Builtin.Bool
-open import Agda.Builtin.Nat
+open import Data.Nat using (ℕ; suc; zero; _*_; _+_; _∸_)
+open import Data.Bool using (Bool; true; false; _∨_; _∧_)
 open import Function using (_∘_)
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
-open import lf-current.Basics
+open import lf-current.Basics using (_=?_; _<=?_; even; orb; andb; negb; negb-involutive; mult-n-Sm; Bin; Z; B0; B1; incr; bin-to-nat)
 
-add-0-r : (n : Nat) → n + 0 ≡ n
+add-0-r : (n : ℕ) → n + 0 ≡ n
 add-0-r 0 = refl
 add-0-r (suc n) rewrite add-0-r n = refl
 
-minus : Nat → Nat → Nat
-minus = _-_
+minus : ℕ → ℕ → ℕ
+minus = _∸_
 
-minus-n-n : (n : Nat) → minus n n ≡ 0
+minus-n-n : (n : ℕ) → minus n n ≡ 0
 minus-n-n zero = refl
 minus-n-n (suc n) rewrite minus-n-n n = refl
 
-mul-0-r : (n : Nat) → n * 0 ≡ 0
+mul-0-r : (n : ℕ) → n * 0 ≡ 0
 mul-0-r zero = refl
 mul-0-r (suc n) rewrite mul-0-r n = refl
 
-plus-n-Sm : (n m : Nat) → suc (n + m) ≡ n + suc m
+plus-n-Sm : (n m : ℕ) → suc (n + m) ≡ n + suc m
 plus-n-Sm zero m = refl
 plus-n-Sm (suc n) m = cong suc (plus-n-Sm n m)
 
-plus-n-Sm' : (n m : Nat) → suc (n + m) ≡ n + suc m
+plus-n-Sm' : (n m : ℕ) → suc (n + m) ≡ n + suc m
 plus-n-Sm' zero m = begin
   zero + suc m   ≡⟨⟩
   suc m          ≡⟨⟩
@@ -38,83 +38,83 @@ plus-n-Sm' (suc n) m = begin
   suc (n + suc m)   ≡⟨⟩
   suc n + suc m     ∎
 
-add-comm : (n m : Nat) → n + m ≡ m + n
+add-comm : (n m : ℕ) → n + m ≡ m + n
 add-comm zero m rewrite add-0-r m = refl
 add-comm (suc n) m rewrite add-comm n m | plus-n-Sm m n = refl
 
-add-assoc : (n m p : Nat) → n + (m + p) ≡ (n + m) + p
+add-assoc : (n m p : ℕ) → n + (m + p) ≡ (n + m) + p
 add-assoc zero m p = refl
 add-assoc (suc n) m p rewrite add-assoc n m p = refl
 
-double : Nat -> Nat
+double : ℕ -> ℕ
 double zero = zero
 double (suc n) = suc (suc (double n))
 
-double-plus : (n : Nat) → double n ≡ n + n
+double-plus : (n : ℕ) → double n ≡ n + n
 double-plus zero = refl
 double-plus (suc n) rewrite double-plus n | plus-n-Sm n n = refl
 
-eqb-refl : (n : Nat) → (n =? n) ≡ true
+eqb-refl : (n : ℕ) → (n =? n) ≡ true
 eqb-refl zero = refl
 eqb-refl (suc n) rewrite eqb-refl n = refl
 
-even-S : (n : Nat) → even (suc n) ≡ negb (even n)
+even-S : (n : ℕ) → even (suc n) ≡ negb (even n)
 even-S zero = refl
 even-S (suc n) rewrite even-S n | negb-involutive (even n) = refl
 
 private
-  add-0-0-r : (n : Nat) → n + 0 + 0 ≡ n
+  add-0-0-r : (n : ℕ) → n + 0 + 0 ≡ n
   add-0-0-r n rewrite add-comm n 0 | add-comm n 0 = refl
 
-mult-0-plus : (n m : Nat) → (n + 0 + 0) * m ≡ n * m
+mult-0-plus : (n m : ℕ) → (n + 0 + 0) * m ≡ n * m
 mult-0-plus n m rewrite add-0-0-r n = refl
 
-plus-rearrange : (n m p q : Nat) → (n + m) + (p + q) ≡ (m + n) + (p + q)
+plus-rearrange : (n m p q : ℕ) → (n + m) + (p + q) ≡ (m + n) + (p + q)
 plus-rearrange n m p q rewrite add-comm n m = refl
 
-add-shuffle : (n m p : Nat) → n + (m + p) ≡ m + (n + p)
+add-shuffle : (n m p : ℕ) → n + (m + p) ≡ m + (n + p)
 add-shuffle n m p rewrite
     add-assoc n m p
   | add-comm n m
   | add-assoc m n p = refl
 
-add-shuffle' : (n m p : Nat) → n + (m + p) ≡ m + (n + p)
+add-shuffle' : (n m p : ℕ) → n + (m + p) ≡ m + (n + p)
 add-shuffle' zero m p = refl
 add-shuffle' (suc n) m p rewrite add-shuffle n m p | plus-n-Sm m (n + p) = refl
 
-mul-comm : (n m : Nat) → n * m ≡ m * n
+mul-comm : (n m : ℕ) → n * m ≡ m * n
 mul-comm zero m rewrite mul-0-r m = refl
 mul-comm (suc n) m rewrite
     mul-comm n m
   | add-comm m (m * n)
   | mult-n-Sm m n = refl
 
-mul-comm' : (n m : Nat) → n * m ≡ m * n
+mul-comm' : (n m : ℕ) → n * m ≡ m * n
 mul-comm' zero m rewrite mul-0-r m = refl
 mul-comm' (suc n) m rewrite
     sym (mult-n-Sm m n)
   | mul-comm n m
   | add-comm m (m * n) = refl
 
-plus-leb-compat-l : (n m p : Nat) → n <=? m ≡ true → (p + n) <=? (p + m) ≡ true
+plus-leb-compat-l : (n m p : ℕ) → n <=? m ≡ true → (p + n) <=? (p + m) ≡ true
 plus-leb-compat-l n m zero H rewrite H = refl
 plus-leb-compat-l n m (suc p) H rewrite plus-leb-compat-l n m p H = refl
 
-leb-refl : (n : Nat) → (n <=? n) ≡ true
+leb-refl : (n : ℕ) → (n <=? n) ≡ true
 leb-refl zero = refl
-leb-refl (suc n) rewrite leb-refl n = refl
+leb-refl (suc n) = leb-refl n
 
-zero-neqb-suc : (n : Nat) → 0 =? (suc n) ≡ false
+zero-neqb-suc : (n : ℕ) → 0 =? (suc n) ≡ false
 zero-neqb-suc _ = refl
 
 andb-false-r : (b : Bool) → andb b false ≡ false
 andb-false-r true = refl
 andb-false-r false = refl
 
-suc-neqb-0 : (n : Nat) → (suc n) =? 0 ≡ false
+suc-neqb-0 : (n : ℕ) → (suc n) =? 0 ≡ false
 suc-neqb-0 _ = refl
 
-mult-1-l : (n : Nat) → (1 * n) ≡ n
+mult-1-l : (n : ℕ) → (1 * n) ≡ n
 mult-1-l zero = refl
 mult-1-l (suc n) rewrite mult-1-l n = refl
 
@@ -123,7 +123,7 @@ all3-spec true true = refl
 all3-spec true false = refl
 all3-spec false c = refl
 
-mult-plus-distr-r : (n m p : Nat) → (n + m) * p ≡ (n * p) + (m * p)
+mult-plus-distr-r : (n m p : ℕ) → (n + m) * p ≡ (n * p) + (m * p)
 mult-plus-distr-r n m zero rewrite
     mul-0-r n
   | mul-0-r m
@@ -141,7 +141,7 @@ mult-plus-distr-r n m (suc p) rewrite
   | sym (mult-n-Sm m p)
   = refl
 
-mult-plus-distr-r' : (n m p : Nat) → (n + m) * p ≡ (n * p) + (m * p)
+mult-plus-distr-r' : (n m p : ℕ) → (n + m) * p ≡ (n * p) + (m * p)
 mult-plus-distr-r' n m zero = begin
   (n + m) * zero      ≡⟨ mul-0-r (n + m) ⟩
   zero                ≡⟨⟩
@@ -158,7 +158,7 @@ mult-plus-distr-r' n m (suc p) = begin
   (n * p + n) + (m * p + m) ≡⟨ cong₂ _+_ (mult-n-Sm n p) (mult-n-Sm m p) ⟩
   n * suc p + m * suc p     ∎
 
-mult-assoc : (n m p : Nat) → n * (m * p) ≡ (n * m) * p
+mult-assoc : (n m p : ℕ) → n * (m * p) ≡ (n * m) * p
 mult-assoc zero m p = refl
 mult-assoc (suc n) m p = begin
   suc n * (m * p)       ≡⟨⟩
@@ -167,14 +167,14 @@ mult-assoc (suc n) m p = begin
   (m + n * m) * p       ≡⟨⟩
   (suc n * m) * p       ∎
 
-mult-assoc' : (n m p : Nat) → n * (m * p) ≡ (n * m) * p
+mult-assoc' : (n m p : ℕ) → n * (m * p) ≡ (n * m) * p
 mult-assoc' zero m p = refl
 mult-assoc' (suc n) m p rewrite
     mult-assoc n m p
   | mult-plus-distr-r m (n * m) p
   = refl
 
-add-shuffle3 : (n m p : Nat) → n + (m + p) ≡ m + (n + p)
+add-shuffle3 : (n m p : ℕ) → n + (m + p) ≡ m + (n + p)
 add-shuffle3 n m p rewrite
     add-assoc n m p
   | add-assoc m n p
@@ -195,15 +195,15 @@ bin-to-nat-pres-incr (B1 b) = begin
   suc (2 * bin-to-nat b + 1) ≡⟨⟩
   1 + (2 * bin-to-nat b + 1) ∎
 
-nat-to-bin : Nat -> Bin
+nat-to-bin : ℕ -> Bin
 nat-to-bin zero = Z
 nat-to-bin (suc n) = incr (nat-to-bin n)
 
-nat-bin-nat : (n : Nat) → bin-to-nat (nat-to-bin n) ≡ n
+nat-bin-nat : (n : ℕ) → bin-to-nat (nat-to-bin n) ≡ n
 nat-bin-nat zero = refl
 nat-bin-nat (suc n) rewrite bin-to-nat-pres-incr (nat-to-bin n) | nat-bin-nat n = refl
 
-double-incr : (n : Nat) → double (suc n) ≡ suc (suc (double n))
+double-incr : (n : ℕ) → double (suc n) ≡ suc (suc (double n))
 double-incr _ = refl
 
 double-bin : Bin → Bin
@@ -255,10 +255,10 @@ normalize-already-normalized : normalize (B1 (B0 (B1 Z))) ≡ B1 (B0 (B1 Z))
 normalize-already-normalized = refl
 
 private
-  2*n≡n+n : (n : Nat) → 2 * n ≡ n + n
+  2*n≡n+n : (n : ℕ) → 2 * n ≡ n + n
   2*n≡n+n n = cong (n +_) (mult-1-l n)
 
-  nat-to-bin-double : (n : Nat) → nat-to-bin (double n) ≡ double-bin (nat-to-bin n)
+  nat-to-bin-double : (n : ℕ) → nat-to-bin (double n) ≡ double-bin (nat-to-bin n)
   nat-to-bin-double zero = refl
   nat-to-bin-double (suc n) = begin
     nat-to-bin (double (suc n))             ≡⟨⟩
@@ -292,7 +292,7 @@ bin-nat-bin (B1 b) = begin
   normalize (B1 b)                               ∎
 
 private
-  nat-to-bin-double' : (n : Nat) → nat-to-bin (double n) ≡ double-bin (nat-to-bin n)
+  nat-to-bin-double' : (n : ℕ) → nat-to-bin (double n) ≡ double-bin (nat-to-bin n)
   nat-to-bin-double' zero = refl
   nat-to-bin-double' (suc n) rewrite
       nat-to-bin-double' n

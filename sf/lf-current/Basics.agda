@@ -1,5 +1,7 @@
 module lf-current.Basics where
 
+open import Agda.Builtin.Bool
+open import Agda.Builtin.Nat
 open import Data.Nat.Properties using (+-comm; +-assoc; +-suc)
 open import Relation.Binary.PropositionalEquality
 
@@ -23,10 +25,6 @@ next-working-day sunday = monday
 
 test-next-working-day : next-working-day (next-working-day saturday) ≡ tuesday
 test-next-working-day = refl
-
-data Bool : Set where
-  true : Bool
-  false : Bool
 
 negb : Bool → Bool
 negb true = false
@@ -156,22 +154,6 @@ module TuplePlayground where
   all-zero (bits B0 B0 B0 B0) = true
   all-zero (bits _ _ _ _) = false
 
-module NatPlayground where
-
-  data Nat : Set where
-    O : Nat
-    S : Nat → Nat
-
-  data OtherNat : Set where
-    stop : OtherNat
-    tick : OtherNat → OtherNat
-
-  pred : Nat → Nat
-  pred O = O
-  pred (S n') = n'
-
-open import Agda.Builtin.Nat
-
 minustwo : Nat → Nat
 minustwo 0 = 0
 minustwo 1 = 0
@@ -191,24 +173,6 @@ test-odd1 = refl
 test-odd2 : odd 4 ≡ false
 test-odd2 = refl
 
-module NatPlayground2 where
-
-  plus : Nat → Nat → Nat
-  plus 0 m = m
-  plus (suc n') m = suc (plus n' m)
-
-  mult : Nat → Nat → Nat
-  mult 0 m = 0
-  mult (suc n') m = plus m (mult n' m)
-
-  test-mult1 : mult 3 3 ≡ 9
-  test-mult1 = refl
-
-  minus : Nat → Nat → Nat
-  minus 0 _ = 0
-  minus (suc n) 0 = n
-  minus (suc n') (suc m') = minus n' m'
-
 exp : Nat → Nat → Nat
 exp base 0 = 1
 exp base (suc p) = base * (exp base p)
@@ -223,11 +187,14 @@ test-factorial1 = refl
 test-factorial2 : factorial 5 ≡ (10 * 12)
 test-factorial2 = refl
 
+-- eqb : Nat → Nat → Bool
+-- eqb 0 0 = true
+-- eqb 0 (suc m') = false
+-- eqb (suc n') 0 = false
+-- eqb (suc n') (suc m') = eqb n' m'
+
 eqb : Nat → Nat → Bool
-eqb 0 0 = true
-eqb 0 (suc m') = false
-eqb (suc n') 0 = false
-eqb (suc n') (suc m') = eqb n' m'
+eqb = _==_
 
 leb : Nat → Nat → Bool
 leb 0 m = true
@@ -253,12 +220,9 @@ test-leb3' : (4 <=? 2) ≡ false
 test-leb3' = refl
 
 ltb : Nat → Nat → Bool
-ltb n m with (m - n)
+ltb n m with m - n
 ... | 0 = false
 ... | _ = true
-
-_<?_ : Nat → Nat → Bool
-_<?_ = ltb
 
 test-ltb1 : ltb 2 2 ≡ false
 test-ltb1 = refl
@@ -518,22 +482,22 @@ module LateDays where
   lower-grade-lowers (grade F Minus) ()
 
   apply-late-policy : Nat → Grade → Grade
-  apply-late-policy late-days g with late-days <? 9
+  apply-late-policy late-days g with late-days < 9
   ... | true = g
-  ... | false with late-days <? 17
+  ... | false with late-days < 17
   ... | true = lower-grade g
-  ... | false with late-days <? 21
+  ... | false with late-days < 21
   ... | true = lower-grade (lower-grade g)
   ... | false = lower-grade (lower-grade (lower-grade g))
 
   no-penalty-for-mostly-on-time : (late-days : Nat) (g : Grade) →
-                                  (late-days <? 9) ≡ true →
+                                  (late-days < 9) ≡ true →
                                   apply-late-policy late-days g ≡ g
   no-penalty-for-mostly-on-time late-days g H rewrite H = refl
 
   grade-lowered-once : (late-days : Nat) (g : Grade) →
-                       (late-days <? 9) ≡ false →
-                       (late-days <? 17) ≡ true →
+                       (late-days < 9) ≡ false →
+                       (late-days < 17) ≡ true →
                        apply-late-policy late-days g ≡ lower-grade g
   grade-lowered-once late-days g H1 H2 rewrite H1 | H2 = refl
 

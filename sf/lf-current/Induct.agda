@@ -1,8 +1,10 @@
 module lf-current.Induct where
 
+open import Agda.Builtin.Bool
 open import Agda.Builtin.Nat
 open import Function using (_∘_)
 open import Relation.Binary.PropositionalEquality
+open ≡-Reasoning
 
 open import lf-current.Basics
 
@@ -11,7 +13,7 @@ add-0-r 0 = refl
 add-0-r (suc n) rewrite add-0-r n = refl
 
 minus : Nat → Nat → Nat
-minus = NatPlayground2.minus
+minus = _-_
 
 minus-n-n : (n : Nat) → minus n n ≡ 0
 minus-n-n zero = refl
@@ -24,8 +26,6 @@ mul-0-r (suc n) rewrite mul-0-r n = refl
 plus-n-Sm : (n m : Nat) → suc (n + m) ≡ n + suc m
 plus-n-Sm zero m = refl
 plus-n-Sm (suc n) m = cong suc (plus-n-Sm n m)
-
-open ≡-Reasoning
 
 plus-n-Sm' : (n m : Nat) → suc (n + m) ≡ n + suc m
 plus-n-Sm' zero m = begin

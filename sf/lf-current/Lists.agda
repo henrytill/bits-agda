@@ -19,12 +19,6 @@ snd (x , y) = y
 fst-pair-3-5 : fst (3 , 5) ≡ 3
 fst-pair-3-5 = refl
 
-fst' : NatProd → Nat
-fst' (x , y) = x
-
-snd' : NatProd → Nat
-snd' (x , y) = y
-
 swap-pair : NatProd → NatProd
 swap-pair (x , y) = (y , x)
 

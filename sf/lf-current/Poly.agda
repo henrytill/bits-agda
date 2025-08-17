@@ -115,8 +115,13 @@ test-filter₁ = refl
 length-is-1 : {A : Set} → List A → Bool
 length-is-1 xs = length xs =? 1
 
-test-filter₂ : filter length-is-1
-               ((1 ∷ 2 ∷ []) ∷ (3 ∷ []) ∷ (4 ∷ []) ∷ (5 ∷ 6 ∷ 7 ∷ []) ∷ ([]) ∷ (8 ∷ []) ∷ [] ) ≡ ((3 ∷ []) ∷ (4 ∷ []) ∷ (8 ∷ []) ∷ [])
+list-of-list₁ : List (List ℕ)
+list-of-list₁ = (1 ∷ 2 ∷ []) ∷ (3 ∷ []) ∷ (4 ∷ []) ∷ (5 ∷ 6 ∷ 7 ∷ []) ∷ ([]) ∷ (8 ∷ []) ∷ []
+
+list-of-list₂ : List (List ℕ)
+list-of-list₂ = (3 ∷ []) ∷ (4 ∷ []) ∷ (8 ∷ []) ∷ []
+
+test-filter₂ : filter length-is-1 list-of-list₁ ≡ list-of-list₂
 test-filter₂ = refl
 
 count-odd-members : List ℕ → ℕ
@@ -134,8 +139,7 @@ test-count-odd-members₃ = refl
 test-anon-fun : do-it-3-times (λ n → n * n) 2 ≡ 256
 test-anon-fun = refl
 
-test-filter₂' : filter (λ xs → length xs =? 1)
-                ((1 ∷ 2 ∷ []) ∷ (3 ∷ []) ∷ (4 ∷ []) ∷ (5 ∷ 6 ∷ 7 ∷ []) ∷ ([]) ∷ (8 ∷ []) ∷ [] ) ≡ ((3 ∷ []) ∷ (4 ∷ []) ∷ (8 ∷ []) ∷ [])
+test-filter₂' : filter (λ xs → length xs =? 1) list-of-list₁ ≡ list-of-list₂
 test-filter₂' = refl
 
 filter-even-gt-7 : List ℕ → List ℕ

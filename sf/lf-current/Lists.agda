@@ -104,9 +104,9 @@ test-countoddmembers₃ : countoddmembers [] ≡ 0
 test-countoddmembers₃ = refl
 
 alternate : Listℕ → Listℕ → Listℕ
-alternate [] xs₂ = xs₂
-alternate xs₁ [] = xs₁
-alternate (x₁ ∷ xs₁) (x₂ ∷ xs₂) = x₁ ∷ x₂ ∷ alternate xs₁ xs₂
+alternate [] ys = ys
+alternate xs [] = xs
+alternate (x ∷ xs) (y ∷ ys) = x ∷ y ∷ alternate xs ys
 
 test-alternate₁ : alternate (1 ∷ 2 ∷ 3 ∷ []) (4 ∷ 5 ∷ 6 ∷ []) ≡ (1 ∷ 4 ∷ 2 ∷ 5 ∷ 3 ∷ 6 ∷ [])
 test-alternate₁ = refl
@@ -396,7 +396,7 @@ module PartialMap where
 
   data PartialMap : Set where
     empty : PartialMap
-    entry : (i : Id) (v : ℕ) (m : PartialMap) → PartialMap
+    entry : Id → ℕ → PartialMap → PartialMap
 
   update : PartialMap → Id → ℕ → PartialMap
   update d x value = entry x value d

@@ -23,24 +23,24 @@ mul-0-r : (n : ℕ) → n * 0 ≡ 0
 mul-0-r zero = refl
 mul-0-r (suc n) rewrite mul-0-r n = refl
 
-plus-n-Sm : (n m : ℕ) → suc (n + m) ≡ n + suc m
-plus-n-Sm zero m = refl
-plus-n-Sm (suc n) m = cong suc (plus-n-Sm n m)
+plus-n-suc-m : (n m : ℕ) → suc (n + m) ≡ n + suc m
+plus-n-suc-m zero m = refl
+plus-n-suc-m (suc n) m = cong suc (plus-n-suc-m n m)
 
-plus-n-Sm' : (n m : ℕ) → suc (n + m) ≡ n + suc m
-plus-n-Sm' zero m = begin
+plus-n-suc-m' : (n m : ℕ) → suc (n + m) ≡ n + suc m
+plus-n-suc-m' zero m = begin
   zero + suc m   ≡⟨⟩
   suc m          ≡⟨⟩
   suc (zero + m) ∎
-plus-n-Sm' (suc n) m = begin
+plus-n-suc-m' (suc n) m = begin
   suc ((suc n) + m) ≡⟨⟩
-  suc (suc (n + m)) ≡⟨ cong suc (plus-n-Sm' n m) ⟩
+  suc (suc (n + m)) ≡⟨ cong suc (plus-n-suc-m' n m) ⟩
   suc (n + suc m)   ≡⟨⟩
   suc n + suc m     ∎
 
 add-comm : (n m : ℕ) → n + m ≡ m + n
 add-comm zero m rewrite add-0-r m = refl
-add-comm (suc n) m rewrite add-comm n m | plus-n-Sm m n = refl
+add-comm (suc n) m rewrite add-comm n m | plus-n-suc-m m n = refl
 
 add-assoc : (n m p : ℕ) → n + (m + p) ≡ (n + m) + p
 add-assoc zero m p = refl
@@ -52,7 +52,7 @@ double (suc n) = suc (suc (double n))
 
 double-plus : (n : ℕ) → double n ≡ n + n
 double-plus zero = refl
-double-plus (suc n) rewrite double-plus n | plus-n-Sm n n = refl
+double-plus (suc n) rewrite double-plus n | plus-n-suc-m n n = refl
 
 eqb-refl : (n : ℕ) → (n =? n) ≡ true
 eqb-refl zero = refl
@@ -80,7 +80,7 @@ add-shuffle n m p rewrite
 
 add-shuffle' : (n m p : ℕ) → n + (m + p) ≡ m + (n + p)
 add-shuffle' zero m p = refl
-add-shuffle' (suc n) m p rewrite add-shuffle n m p | plus-n-Sm m (n + p) = refl
+add-shuffle' (suc n) m p rewrite add-shuffle n m p | plus-n-suc-m m (n + p) = refl
 
 mul-comm : (n m : ℕ) → n * m ≡ m * n
 mul-comm zero m rewrite mul-0-r m = refl

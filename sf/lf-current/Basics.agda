@@ -235,21 +235,21 @@ mult-n-0 : (n : ℕ) → n * 0 ≡ 0
 mult-n-0 0 = refl
 mult-n-0 (suc n) = mult-n-0 n
 
--- mult-n-Sm : (n m : ℕ) → n * m + n ≡ n * suc m
--- mult-n-Sm 0 m = refl
--- mult-n-Sm (suc n) m rewrite
+-- mult-n-suc-m : (n m : ℕ) → n * m + n ≡ n * suc m
+-- mult-n-suc-m 0 m = refl
+-- mult-n-suc-m (suc n) m rewrite
 --     +-assoc m (n * m) (suc n)
 --   | +-suc (n * m) n
---   | mult-n-Sm n m
+--   | mult-n-suc-m n m
 --   | sym (+-suc m (n * suc m)) = refl
 
-mult-n-Sm : (n m : ℕ) → n * m + n ≡ n * suc m
-mult-n-Sm 0 m = refl
-mult-n-Sm (suc n) m = begin
+mult-n-suc-m : (n m : ℕ) → n * m + n ≡ n * suc m
+mult-n-suc-m 0 m = refl
+mult-n-suc-m (suc n) m = begin
   (suc n) * m + suc n ≡⟨⟩
   (m + n * m) + suc n ≡⟨ +-assoc m (n * m) (suc n) ⟩
   m + (n * m + suc n) ≡⟨ cong (m +_) (+-suc (n * m) n) ⟩
-  m + suc (n * m + n) ≡⟨ cong (m +_) (cong suc (mult-n-Sm n m)) ⟩
+  m + suc (n * m + n) ≡⟨ cong (m +_) (cong suc (mult-n-suc-m n m)) ⟩
   m + suc (n * suc m) ≡⟨ +-suc m (n * suc m) ⟩
   suc (m + n * suc m) ≡⟨⟩
   (suc n) * suc m     ∎

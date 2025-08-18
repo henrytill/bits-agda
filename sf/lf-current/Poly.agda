@@ -13,10 +13,10 @@ repeat : {A : Set} → A → ℕ → List A
 repeat x zero = []
 repeat x (suc count) = x ∷ (repeat x count)
 
-test-repeat₁ : repeat 4 2 ≡ (4 ∷ 4 ∷ [])
+test-repeat₁ : repeat 4 2 ≡ 4 ∷ 4 ∷ []
 test-repeat₁ = refl
 
-test-repeat₂ : repeat false 1 ≡ (false ∷ [])
+test-repeat₂ : repeat false 1 ≡ false ∷ []
 test-repeat₂ = refl
 
 app : {A : Set} → List A → List A → List A
@@ -24,12 +24,12 @@ app = _++_
 
 rev : {A : Set} → List A → List A
 rev [] = []
-rev (x ∷ xs) = rev xs ++ (x ∷ [])
+rev (x ∷ xs) = rev xs ++ x ∷ []
 
-test-rev₁ : rev (1 ∷ 2 ∷ []) ≡ (2 ∷ 1 ∷ [])
+test-rev₁ : rev (1 ∷ 2 ∷ []) ≡ 2 ∷ 1 ∷ []
 test-rev₁ = refl
 
-test-rev₂ : rev (true ∷ []) ≡ (true ∷ [])
+test-rev₂ : rev (true ∷ []) ≡ true ∷ []
 test-rev₂ = refl
 
 length : {A : Set} → List A → ℕ
@@ -109,7 +109,7 @@ filter f (x ∷ xs) with f x
 ... | false = filter f xs
 ... | true = x ∷ filter f xs
 
-test-filter₁ : filter even (1 ∷ 2 ∷ 3 ∷ 4 ∷ []) ≡ (2 ∷ 4 ∷ [])
+test-filter₁ : filter even (1 ∷ 2 ∷ 3 ∷ 4 ∷ []) ≡ 2 ∷ 4 ∷ []
 test-filter₁ = refl
 
 length-is-1 : {A : Set} → List A → Bool
@@ -145,7 +145,7 @@ test-filter₂' = refl
 filter-even-gt-7 : List ℕ → List ℕ
 filter-even-gt-7 = filter (λ x → (even x) ∧ (7 <? x))
 
-test-filter-even-gt-7₁ : filter-even-gt-7 (1 ∷ 2 ∷ 6 ∷ 9 ∷ 10 ∷ 3 ∷ 12 ∷ 8 ∷ []) ≡ (10 ∷ 12 ∷ 8 ∷ [])
+test-filter-even-gt-7₁ : filter-even-gt-7 (1 ∷ 2 ∷ 6 ∷ 9 ∷ 10 ∷ 3 ∷ 12 ∷ 8 ∷ []) ≡ 10 ∷ 12 ∷ 8 ∷ []
 test-filter-even-gt-7₁ = refl
 
 test-filter-even-gt-7₂ : filter-even-gt-7 (5 ∷ 2 ∷ 6 ∷ 19 ∷ 129 ∷ []) ≡ []
@@ -163,8 +163,8 @@ test-partition₂ = refl
 map : {A B : Set} → (A → B) → List A → List B
 map = List.map
 
-test-map₁ : map (λ x → 3 + x) (2 ∷ 0 ∷ 2 ∷ []) ≡ (5 ∷ 3 ∷ 5 ∷ [])
+test-map₁ : map (λ x → 3 + x) (2 ∷ 0 ∷ 2 ∷ []) ≡ 5 ∷ 3 ∷ 5 ∷ []
 test-map₁ = refl
 
-test-map₂ : map odd (2 ∷ 1 ∷ 2 ∷ 5 ∷ []) ≡ (false ∷ true ∷ false ∷ true ∷ [])
+test-map₂ : map odd (2 ∷ 1 ∷ 2 ∷ 5 ∷ []) ≡ false ∷ true ∷ false ∷ true ∷ []
 test-map₂ = refl

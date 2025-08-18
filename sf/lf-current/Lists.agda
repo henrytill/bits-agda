@@ -48,13 +48,13 @@ repeat n (suc count) = n ∷ repeat n count
 app : Listℕ → Listℕ → Listℕ
 app = _++_
 
-test-app₁ : (1 ∷ 2 ∷ 3 ∷ []) ++ (4 ∷ 5 ∷ []) ≡ (1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ [])
+test-app₁ : 1 ∷ 2 ∷ 3 ∷ [] ++ 4 ∷ 5 ∷ [] ≡ 1 ∷ 2 ∷ 3 ∷ 4 ∷ 5 ∷ []
 test-app₁ = refl
 
-test-app₂ : [] ++ (4 ∷ 5 ∷ []) ≡ (4 ∷ 5 ∷ [])
+test-app₂ : [] ++ 4 ∷ 5 ∷ [] ≡ 4 ∷ 5 ∷ []
 test-app₂ = refl
 
-test-app₃ : (1 ∷ 2 ∷ 3 ∷ []) ++ [] ≡ (1 ∷ 2 ∷ 3 ∷ [])
+test-app₃ : 1 ∷ 2 ∷ 3 ∷ [] ++ [] ≡ 1 ∷ 2 ∷ 3 ∷ []
 test-app₃ = refl
 
 hd : ℕ → Listℕ → ℕ
@@ -71,7 +71,7 @@ test-hd₁ = refl
 test-hd₂ : hd 0 [] ≡ 0
 test-hd₂ = refl
 
-test-tl : tl (1 ∷ 2 ∷ 3 ∷ []) ≡ (2 ∷ 3 ∷ [])
+test-tl : tl (1 ∷ 2 ∷ 3 ∷ []) ≡ 2 ∷ 3 ∷ []
 test-tl = refl
 
 nonzeros : Listℕ → Listℕ
@@ -79,7 +79,7 @@ nonzeros [] = []
 nonzeros (0 ∷ xs) = nonzeros xs
 nonzeros (x ∷ xs) = x ∷ nonzeros xs
 
-test-nonzeros : nonzeros (0 ∷ 1 ∷ 0 ∷ 2 ∷ 3 ∷ 0 ∷ 0 ∷ []) ≡ (1 ∷ 2 ∷ 3 ∷ [])
+test-nonzeros : nonzeros (0 ∷ 1 ∷ 0 ∷ 2 ∷ 3 ∷ 0 ∷ 0 ∷ []) ≡ 1 ∷ 2 ∷ 3 ∷ []
 test-nonzeros = refl
 
 oddmembers : Listℕ → Listℕ
@@ -88,7 +88,7 @@ oddmembers (x ∷ xs) with odd x
 ... | false = oddmembers xs
 ... | true = x ∷ oddmembers xs
 
-test-oddmembers : oddmembers (0 ∷ 1 ∷ 0 ∷ 2 ∷ 3 ∷ 0 ∷ 0 ∷ []) ≡ (1 ∷ 3 ∷ [])
+test-oddmembers : oddmembers (0 ∷ 1 ∷ 0 ∷ 2 ∷ 3 ∷ 0 ∷ 0 ∷ []) ≡ 1 ∷ 3 ∷ []
 test-oddmembers = refl
 
 countoddmembers : Listℕ → ℕ
@@ -108,16 +108,16 @@ alternate [] ys = ys
 alternate xs [] = xs
 alternate (x ∷ xs) (y ∷ ys) = x ∷ y ∷ alternate xs ys
 
-test-alternate₁ : alternate (1 ∷ 2 ∷ 3 ∷ []) (4 ∷ 5 ∷ 6 ∷ []) ≡ (1 ∷ 4 ∷ 2 ∷ 5 ∷ 3 ∷ 6 ∷ [])
+test-alternate₁ : alternate (1 ∷ 2 ∷ 3 ∷ []) (4 ∷ 5 ∷ 6 ∷ []) ≡ 1 ∷ 4 ∷ 2 ∷ 5 ∷ 3 ∷ 6 ∷ []
 test-alternate₁ = refl
 
-test-alternate₂ : alternate (1 ∷ []) (4 ∷ 5 ∷ 6 ∷ []) ≡ (1 ∷ 4 ∷ 5 ∷ 6 ∷ [])
+test-alternate₂ : alternate (1 ∷ []) (4 ∷ 5 ∷ 6 ∷ []) ≡ 1 ∷ 4 ∷ 5 ∷ 6 ∷ []
 test-alternate₂ = refl
 
-test-alternate₃ : alternate (1 ∷ 2 ∷ 3 ∷ []) (4 ∷ []) ≡ (1 ∷ 4 ∷ 2 ∷ 3 ∷ [])
+test-alternate₃ : alternate (1 ∷ 2 ∷ 3 ∷ []) (4 ∷ []) ≡ 1 ∷ 4 ∷ 2 ∷ 3 ∷ []
 test-alternate₃ = refl
 
-test-alternate₄ : alternate [] (20 ∷ 30 ∷ []) ≡ (20 ∷ 30 ∷ [])
+test-alternate₄ : alternate [] (20 ∷ 30 ∷ []) ≡ 20 ∷ 30 ∷ []
 test-alternate₄ = refl
 
 Bag : Set
@@ -233,7 +233,7 @@ rev : Listℕ → Listℕ
 rev [] = []
 rev (x ∷ xs) = rev xs ++ (x ∷ [])
 
-test-rev₁ : rev (1 ∷ 2 ∷ 3 ∷ []) ≡ (3 ∷ 2 ∷ 1 ∷ [])
+test-rev₁ : rev (1 ∷ 2 ∷ 3 ∷ []) ≡ 3 ∷ 2 ∷ 1 ∷ []
 test-rev₁ = refl
 
 test-rev₂ : rev [] ≡ []

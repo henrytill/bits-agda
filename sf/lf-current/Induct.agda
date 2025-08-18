@@ -6,7 +6,7 @@ open import Function using (_∘_)
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
-open import lf-current.Basics using (_=?_; _<=?_; even; orb; andb; negb; negb-involutive; mult-n-Sm; Bin; Z; B0; B1; incr; bin-to-nat)
+open import lf-current.Basics using (_=?_; _<=?_; even; orb; andb; negb; negb-involutive; mult-n-suc-m; Bin; Z; B0; B1; incr; bin-to-nat)
 
 add-0-r : (n : ℕ) → n + 0 ≡ n
 add-0-r 0 = refl
@@ -19,9 +19,9 @@ minus-n-n : (n : ℕ) → minus n n ≡ 0
 minus-n-n zero = refl
 minus-n-n (suc n) rewrite minus-n-n n = refl
 
-mul-0-r : (n : ℕ) → n * 0 ≡ 0
-mul-0-r zero = refl
-mul-0-r (suc n) rewrite mul-0-r n = refl
+mult-0-r : (n : ℕ) → n * 0 ≡ 0
+mult-0-r zero = refl
+mult-0-r (suc n) rewrite mult-0-r n = refl
 
 plus-n-suc-m : (n m : ℕ) → suc (n + m) ≡ n + suc m
 plus-n-suc-m zero m = refl
@@ -82,18 +82,18 @@ add-shuffle' : (n m p : ℕ) → n + (m + p) ≡ m + (n + p)
 add-shuffle' zero m p = refl
 add-shuffle' (suc n) m p rewrite add-shuffle n m p | plus-n-suc-m m (n + p) = refl
 
-mul-comm : (n m : ℕ) → n * m ≡ m * n
-mul-comm zero m rewrite mul-0-r m = refl
-mul-comm (suc n) m rewrite
-    mul-comm n m
+mult-comm : (n m : ℕ) → n * m ≡ m * n
+mult-comm zero m rewrite mult-0-r m = refl
+mult-comm (suc n) m rewrite
+    mult-comm n m
   | add-comm m (m * n)
-  | mult-n-Sm m n = refl
+  | mult-n-suc-m m n = refl
 
-mul-comm' : (n m : ℕ) → n * m ≡ m * n
-mul-comm' zero m rewrite mul-0-r m = refl
-mul-comm' (suc n) m rewrite
-    sym (mult-n-Sm m n)
-  | mul-comm n m
+mult-comm' : (n m : ℕ) → n * m ≡ m * n
+mult-comm' zero m rewrite mult-0-r m = refl
+mult-comm' (suc n) m rewrite
+    sym (mult-n-suc-m m n)
+  | mult-comm' n m
   | add-comm m (m * n) = refl
 
 plus-leb-compat-l : (n m p : ℕ) → n <=? m ≡ true → (p + n) <=? (p + m) ≡ true
@@ -125,37 +125,37 @@ all3-spec false c = refl
 
 mult-plus-distr-r : (n m p : ℕ) → (n + m) * p ≡ (n * p) + (m * p)
 mult-plus-distr-r n m zero rewrite
-    mul-0-r n
-  | mul-0-r m
-  | mul-0-r (n + m)
+    mult-0-r n
+  | mult-0-r m
+  | mult-0-r (n + m)
   = refl
 mult-plus-distr-r n m (suc p) rewrite
-    sym (mult-n-Sm (n + m) p)
+    sym (mult-n-suc-m (n + m) p)
   | mult-plus-distr-r n m p
   | sym (add-assoc (n * p) (m * p) (n + m))
   | add-assoc (m * p) n m
   | add-comm (m * p) n
   | sym (add-assoc n (m * p) m)
   | add-assoc (n * p) n (m * p + m)
-  | sym (mult-n-Sm n p)
-  | sym (mult-n-Sm m p)
+  | sym (mult-n-suc-m n p)
+  | sym (mult-n-suc-m m p)
   = refl
 
 mult-plus-distr-r' : (n m p : ℕ) → (n + m) * p ≡ (n * p) + (m * p)
 mult-plus-distr-r' n m zero = begin
-  (n + m) * zero      ≡⟨ mul-0-r (n + m) ⟩
+  (n + m) * zero      ≡⟨ mult-0-r (n + m) ⟩
   zero                ≡⟨⟩
-  zero + zero         ≡⟨ sym (cong₂ _+_ (mul-0-r n) (mul-0-r m)) ⟩
+  zero + zero         ≡⟨ sym (cong₂ _+_ (mult-0-r n) (mult-0-r m)) ⟩
   n * zero + m * zero ∎
 mult-plus-distr-r' n m (suc p) = begin
-  (n + m) * suc p           ≡⟨ sym (mult-n-Sm (n + m) p) ⟩
+  (n + m) * suc p           ≡⟨ sym (mult-n-suc-m (n + m) p) ⟩
   (n + m) * p + (n + m)     ≡⟨ cong (_+ (n + m)) (mult-plus-distr-r n m p) ⟩
   (n * p + m * p) + (n + m) ≡⟨ sym (add-assoc (n * p) (m * p) (n + m)) ⟩
   n * p + (m * p + (n + m)) ≡⟨ cong (n * p +_) (add-assoc (m * p) n m) ⟩
   n * p + ((m * p + n) + m) ≡⟨ cong (n * p +_) (cong (_+ m) (add-comm (m * p) n)) ⟩
   n * p + ((n + m * p) + m) ≡⟨ cong (n * p +_) (sym (add-assoc n (m * p) m)) ⟩
   n * p + (n + (m * p + m)) ≡⟨ add-assoc (n * p) n (m * p + m) ⟩
-  (n * p + n) + (m * p + m) ≡⟨ cong₂ _+_ (mult-n-Sm n p) (mult-n-Sm m p) ⟩
+  (n * p + n) + (m * p + m) ≡⟨ cong₂ _+_ (mult-n-suc-m n p) (mult-n-suc-m m p) ⟩
   n * suc p + m * suc p     ∎
 
 mult-assoc : (n m p : ℕ) → n * (m * p) ≡ (n * m) * p
@@ -187,9 +187,9 @@ bin-to-nat-pres-incr (B0 b) = add-comm (2 * bin-to-nat b) 1
 bin-to-nat-pres-incr (B1 b) = begin
   bin-to-nat (B0 (incr b))   ≡⟨⟩
   2 * bin-to-nat (incr b)    ≡⟨ cong (2 *_) (bin-to-nat-pres-incr b) ⟩
-  2 * (1 + bin-to-nat b)     ≡⟨ mul-comm 2 (1 + bin-to-nat b) ⟩
+  2 * (1 + bin-to-nat b)     ≡⟨ mult-comm 2 (1 + bin-to-nat b) ⟩
   (1 + bin-to-nat b) * 2     ≡⟨ mult-plus-distr-r 1 (bin-to-nat b) 2 ⟩
-  1 * 2 + bin-to-nat b * 2   ≡⟨ cong₂ _+_ (mult-1-l 2) (mul-comm (bin-to-nat b) 2) ⟩
+  1 * 2 + bin-to-nat b * 2   ≡⟨ cong₂ _+_ (mult-1-l 2) (mult-comm (bin-to-nat b) 2) ⟩
   2 + 2 * bin-to-nat b       ≡⟨⟩
   suc (1 + 2 * bin-to-nat b) ≡⟨ cong suc (add-comm 1 (2 * bin-to-nat b)) ⟩
   suc (2 * bin-to-nat b + 1) ≡⟨⟩

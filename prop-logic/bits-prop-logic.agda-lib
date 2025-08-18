@@ -1,4 +1,4 @@
-name: prop-logic
+name: bits-prop-logic
 depend:
   standard-library
 include: . src

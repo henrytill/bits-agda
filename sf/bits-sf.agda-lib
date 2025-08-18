@@ -1,4 +1,4 @@
-name: sf
+name: bits-sf
 depend:
   standard-library
 include: . lf-current

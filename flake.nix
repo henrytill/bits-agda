@@ -17,22 +17,22 @@
     }:
     let
       subpackages = pkgs: {
-        hello = {
+        bits-hello = {
           version = "0.1";
           path = ./hello;
           buildInputs = [ ];
         };
-        prop-logic = {
+        bits-prop-logic = {
           version = "0.1";
           path = ./prop-logic;
           buildInputs = [ pkgs.standard-library ];
         };
-        sf = {
+        bits-sf = {
           version = "0.1";
           path = ./sf;
           buildInputs = [ pkgs.standard-library ];
         };
-        vfpa = {
+        bits-vfpa = {
           version = "0.1";
           path = ./vfpa;
           buildInputs = [ pkgs.iowa-stdlib ];

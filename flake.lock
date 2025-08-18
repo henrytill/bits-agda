@@ -18,6 +18,22 @@
         "type": "github"
       }
     },
+    "iowa-stdlib-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1750217040,
+        "narHash": "sha256-WoZywngs9jjzxlZtMGmhjiBQjK/cW8QZkBXmQ4aL1VA=",
+        "owner": "cedille",
+        "repo": "ial",
+        "rev": "41e8d7d4255207940ad3e5a1b7720770256074c6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "cedille",
+        "repo": "ial",
+        "type": "github"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1754990257,
@@ -37,6 +53,7 @@
     "root": {
       "inputs": {
         "flake-utils": "flake-utils",
+        "iowa-stdlib-src": "iowa-stdlib-src",
         "nixpkgs": "nixpkgs"
       }
     },

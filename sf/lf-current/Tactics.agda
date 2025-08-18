@@ -155,9 +155,9 @@ silly₄ : (n m p q : ℕ) →
 silly₄ n m p q eq₁ eq₂ = sym (eq₁ (sym eq₂))
 
 silly₄' : (n m p q : ℕ) →
-         (n ≡ m → p ≡ q) →
-         m ≡ n →
-         q ≡ p
+          (n ≡ m → p ≡ q) →
+          m ≡ n →
+          q ≡ p
 silly₄' n m p q eq refl = sym (eq refl)
 
 specialize-example : (n : ℕ) → ((m : ℕ) → m * n ≡ 0) → n ≡ 0

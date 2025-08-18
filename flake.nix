@@ -11,40 +11,46 @@
       ...
     }:
     let
+      subpackages = pkgs: {
+        hello = {
+          version = "0.1";
+          path = ./hello;
+          buildInputs = [ ];
+        };
+        prop-logic = {
+          version = "0.1";
+          path = ./prop-logic;
+          buildInputs = [ pkgs.standard-library ];
+        };
+        sf = {
+          version = "0.1";
+          path = ./sf;
+          buildInputs = [ pkgs.standard-library ];
+        };
+      };
       overlay = final: prev: {
         agdaPackages = prev.agdaPackages.overrideScope (
-          afinal: aprev: {
-            hello = afinal.mkDerivation {
-              version = "0.1";
-              pname = "hello";
-              src = builtins.path {
-                path = ./hello;
-                name = "hello-src";
+          afinal: aprev:
+          let
+            genBits =
+              pname:
+              {
+                version,
+                path,
+                buildInputs,
+              }:
+              afinal.mkDerivation {
+                inherit version;
+                inherit pname;
+                src = builtins.path {
+                  inherit path;
+                  name = "${pname}-src";
+                };
+                inherit buildInputs;
+                meta = { };
               };
-              buildInputs = [ ];
-              meta = { };
-            };
-            prop-logic = afinal.mkDerivation {
-              version = "0.1";
-              pname = "prop-logic";
-              src = builtins.path {
-                path = ./prop-logic;
-                name = "prop-logic-src";
-              };
-              buildInputs = [ afinal.standard-library ];
-              meta = { };
-            };
-            sf = afinal.mkDerivation {
-              version = "0.1";
-              pname = "sf";
-              src = builtins.path {
-                path = ./sf;
-                name = "sf-src";
-              };
-              buildInputs = [ afinal.standard-library ];
-              meta = { };
-            };
-          }
+          in
+          (prev.lib.mapAttrs (name: config: genBits name config) (subpackages afinal))
         );
       };
     in
@@ -55,20 +61,20 @@
           inherit system;
           overlays = [ overlay ];
         };
+        ps = (pkgs.lib.mapAttrs (name: _: pkgs.agdaPackages.${name}) (subpackages pkgs.agdaPackages));
       in
       rec {
-        packages.hello = pkgs.agdaPackages.hello;
-        packages.prop-logic = pkgs.agdaPackages.prop-logic;
-        packages.sf = pkgs.agdaPackages.sf;
-        packages.all = pkgs.agdaPackages.mkLibraryFile (
-          with packages;
-          [
-            hello
-            prop-logic
-            sf
-          ]
-        );
-        packages.default = packages.all;
+        packages = ps // {
+          all = pkgs.agdaPackages.mkLibraryFile (
+            with ps;
+            [
+              hello
+              prop-logic
+              sf
+            ]
+          );
+          default = packages.all;
+        };
         devShell = pkgs.mkShell {
           buildInputs = [ (pkgs.agda.withPackages (ps: [ ps.standard-library ])) ];
         };

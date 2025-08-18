@@ -79,20 +79,22 @@
           inherit system;
           overlays = [ overlay ];
         };
-        ps = (pkgs.lib.mapAttrs (name: _: pkgs.agdaPackages.${name}) (subpackages pkgs.agdaPackages));
+        lib = pkgs.lib;
+        ps = lib.genAttrs (lib.attrNames (subpackages pkgs.agdaPackages)) (name: pkgs.agdaPackages.${name});
       in
-      rec {
-        packages = ps // {
+      {
+        packages = ps // rec {
           all = pkgs.agdaPackages.mkLibraryFile (builtins.attrValues ps);
-          default = packages.all;
+          default = all;
         };
-        devShell = pkgs.mkShell {
-          buildInputs = [
-            (pkgs.agda.withPackages (ps: [
-              ps.standard-library
-              ps.iowa-stdlib
-            ]))
-          ];
+        devShells = {
+          default = pkgs.mkShell {
+            buildInputs = [
+              (pkgs.agda.withPackages (
+                aps: lib.unique (lib.concatLists (lib.mapAttrsToList (_: pkg: pkg.buildInputs) (subpackages aps)))
+              ))
+            ];
+          };
         };
       }
     );

@@ -83,15 +83,7 @@
       in
       rec {
         packages = ps // {
-          all = pkgs.agdaPackages.mkLibraryFile (
-            with ps;
-            [
-              hello
-              prop-logic
-              sf
-              vfpa
-            ]
-          );
+          all = pkgs.agdaPackages.mkLibraryFile (builtins.attrValues ps);
           default = packages.all;
         };
         devShell = pkgs.mkShell {

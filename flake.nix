@@ -60,7 +60,7 @@
                 meta = { };
               };
           in
-          (prev.lib.mapAttrs (name: config: genBits name config) (subpackages afinal))
+          (prev.lib.mapAttrs genBits (subpackages afinal))
           // {
             iowa-stdlib = aprev.iowa-stdlib.overrideAttrs (_: {
               version = "develop";

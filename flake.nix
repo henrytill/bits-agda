@@ -76,6 +76,7 @@
         };
         lib = pkgs.lib;
         ps = lib.genAttrs (lib.attrNames (libraries pkgs.agdaPackages)) (name: pkgs.agdaPackages.${name});
+        getBuildInputs = pname: attrs: attrs.buildInputs or [ ];
       in
       {
         packages = ps // rec {
@@ -86,8 +87,7 @@
           default = pkgs.mkShell {
             buildInputs = [
               (pkgs.agda.withPackages (
-                aps:
-                lib.unique (lib.concatLists (lib.mapAttrsToList (_: pkg: pkg.buildInputs or [ ]) (libraries aps)))
+                aps: lib.unique (lib.concatLists (lib.mapAttrsToList getBuildInputs (libraries aps)))
               ))
             ];
           };

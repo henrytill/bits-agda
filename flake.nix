@@ -16,7 +16,7 @@
       ...
     }:
     let
-      subpackages = pkgs: {
+      libraries = pkgs: {
         bits-hello = {
           version = "0.1";
           path = ./hello;
@@ -60,7 +60,7 @@
                 meta = { };
               };
           in
-          (prev.lib.mapAttrs genBits (subpackages afinal))
+          (prev.lib.mapAttrs genBits (libraries afinal))
           // {
             iowa-stdlib = aprev.iowa-stdlib.overrideAttrs (_: {
               version = "develop";
@@ -80,7 +80,7 @@
           overlays = [ overlay ];
         };
         lib = pkgs.lib;
-        ps = lib.genAttrs (lib.attrNames (subpackages pkgs.agdaPackages)) (name: pkgs.agdaPackages.${name});
+        ps = lib.genAttrs (lib.attrNames (libraries pkgs.agdaPackages)) (name: pkgs.agdaPackages.${name});
       in
       {
         packages = ps // rec {
@@ -91,7 +91,7 @@
           default = pkgs.mkShell {
             buildInputs = [
               (pkgs.agda.withPackages (
-                aps: lib.unique (lib.concatLists (lib.mapAttrsToList (_: pkg: pkg.buildInputs) (subpackages aps)))
+                aps: lib.unique (lib.concatLists (lib.mapAttrsToList (_: pkg: pkg.buildInputs) (libraries aps)))
               ))
             ];
           };

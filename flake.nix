@@ -75,8 +75,8 @@
           overlays = [ overlay ];
         };
         lib = pkgs.lib;
-        ps = lib.genAttrs (lib.attrNames (libraries pkgs.agdaPackages)) (name: pkgs.agdaPackages.${name});
-        getBuildInputs = pname: attrs: attrs.buildInputs or [ ];
+        ps = lib.mapAttrs (name: _: pkgs.agdaPackages.${name}) (libraries pkgs.agdaPackages);
+        getBuildInputs = _: attrs: attrs.buildInputs or [ ];
       in
       {
         packages = ps // rec {

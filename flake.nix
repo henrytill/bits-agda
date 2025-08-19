@@ -18,22 +18,17 @@
     let
       libraries = pkgs: {
         bits-hello = {
-          version = "0.1";
           path = ./hello;
-          buildInputs = [ ];
         };
         bits-prop-logic = {
-          version = "0.1";
           path = ./prop-logic;
           buildInputs = [ pkgs.standard-library ];
         };
         bits-sf = {
-          version = "0.1";
           path = ./sf;
           buildInputs = [ pkgs.standard-library ];
         };
         bits-vfpa = {
-          version = "0.1";
           path = ./vfpa;
           buildInputs = [ pkgs.iowa-stdlib ];
         };
@@ -45,9 +40,9 @@
             genBits =
               pname:
               {
-                version,
+                version ? "0.1",
                 path,
-                buildInputs,
+                buildInputs ? [ ],
               }:
               afinal.mkDerivation {
                 inherit version;
@@ -91,7 +86,8 @@
           default = pkgs.mkShell {
             buildInputs = [
               (pkgs.agda.withPackages (
-                aps: lib.unique (lib.concatLists (lib.mapAttrsToList (_: pkg: pkg.buildInputs) (libraries aps)))
+                aps:
+                lib.unique (lib.concatLists (lib.mapAttrsToList (_: pkg: pkg.buildInputs or [ ]) (libraries aps)))
               ))
             ];
           };

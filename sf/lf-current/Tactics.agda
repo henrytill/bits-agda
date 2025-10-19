@@ -23,9 +23,9 @@ silly₂ : (n m o p : ℕ) →
 silly₂ n m o p eq₁ eq₂ = eq₂ eq₁
 
 silly₂' : (n m : ℕ) →
-         (n , n) ≡ (m , m) →
-         ((q r : ℕ) → (q , q) ≡ (r , r) → q ∷ [] ≡ r ∷ []) →
-         n ∷ [] ≡ m ∷ []
+          (n , n) ≡ (m , m) →
+          ((q r : ℕ) → (q , q) ≡ (r , r) → q ∷ [] ≡ r ∷ []) →
+          n ∷ [] ≡ m ∷ []
 silly₂' n m eq₁ eq₂ = eq₂ n m eq₁
 
 silly-ex : (p : ℕ) →

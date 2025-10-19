@@ -296,11 +296,11 @@ plus-1-neq-0' : (n : ℕ) → (n + 1) =? 0 ≡ false
 plus-1-neq-0' 0 = refl
 plus-1-neq-0' (suc n) = refl
 
-andb-commutative'' : (b c : Bool) → andb b c ≡ andb c b
-andb-commutative'' true true = refl
-andb-commutative'' true false = refl
-andb-commutative'' false true = refl
-andb-commutative'' false false = refl
+andb-commutative' : (b c : Bool) → andb b c ≡ andb c b
+andb-commutative' true true = refl
+andb-commutative' true false = refl
+andb-commutative' false true = refl
+andb-commutative' false false = refl
 
 zero-nbeq-plus-1 : (n : ℕ) → (0 =? (n + 1)) ≡ false
 zero-nbeq-plus-1 0 = refl

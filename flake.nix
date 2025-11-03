@@ -18,18 +18,18 @@
     let
       libraries = pkgs: {
         bits-hello = {
-          path = ./hello;
+          src = "${self}/hello";
         };
         bits-prop-logic = {
-          path = ./prop-logic;
+          src = "${self}/prop-logic";
           buildInputs = [ pkgs.standard-library ];
         };
         bits-sf = {
-          path = ./sf;
+          src = "${self}/sf";
           buildInputs = [ pkgs.standard-library ];
         };
         bits-vfpa = {
-          path = ./vfpa;
+          src = "${self}/vfpa";
           buildInputs = [ pkgs.iowa-stdlib ];
         };
       };
@@ -41,17 +41,16 @@
               pname:
               {
                 version ? "0.1",
-                path,
+                src,
                 buildInputs ? [ ],
               }:
               afinal.mkDerivation {
-                inherit version;
-                inherit pname;
-                src = builtins.path {
-                  inherit path;
-                  name = "${pname}-src";
-                };
-                inherit buildInputs;
+                inherit
+                  pname
+                  version
+                  src
+                  buildInputs
+                  ;
                 meta = { };
               };
           in

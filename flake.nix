@@ -59,6 +59,9 @@
             iowa-stdlib = aprev.iowa-stdlib.overrideAttrs (_: {
               version = "develop";
               src = iowa-stdlib-src;
+              prePatch = ''
+                rm ial.agda-lib
+              '';
               libraryFile = "./.agda-lib";
               meta.broken = false;
             });

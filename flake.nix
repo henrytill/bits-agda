@@ -87,7 +87,7 @@
         };
         devShells = {
           default = pkgs.mkShell {
-            buildInputs = [
+            packages = [
               (pkgs.agda.withPackages (
                 aps: lib.unique (lib.concatLists (lib.mapAttrsToList getBuildInputs (libraries aps)))
               ))

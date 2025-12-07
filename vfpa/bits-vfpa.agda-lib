@@ -1,4 +1,4 @@
 name: bits-vfpa
 depend:
-  IAL-1.3
+  ial
 include: . src

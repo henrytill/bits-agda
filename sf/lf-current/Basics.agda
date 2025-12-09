@@ -235,13 +235,14 @@ mult-n-0 : (n : ℕ) → n * 0 ≡ 0
 mult-n-0 0 = refl
 mult-n-0 (suc n) = mult-n-0 n
 
--- mult-n-suc-m : (n m : ℕ) → n * m + n ≡ n * suc m
--- mult-n-suc-m 0 m = refl
--- mult-n-suc-m (suc n) m rewrite
---     +-assoc m (n * m) (suc n)
---   | +-suc (n * m) n
---   | mult-n-suc-m n m
---   | sym (+-suc m (n * suc m)) = refl
+private
+  mult-n-suc-m₀ : (n m : ℕ) → n * m + n ≡ n * suc m
+  mult-n-suc-m₀ 0 m = refl
+  mult-n-suc-m₀ (suc n) m rewrite
+      +-assoc m (n * m) (suc n)
+    | +-suc (n * m) n
+    | mult-n-suc-m₀ n m
+    | sym (+-suc m (n * suc m)) = refl
 
 mult-n-suc-m : (n m : ℕ) → n * m + n ≡ n * suc m
 mult-n-suc-m 0 m = refl

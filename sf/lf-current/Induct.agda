@@ -6,7 +6,22 @@ open import Function using (_∘_)
 open import Relation.Binary.PropositionalEquality
 open ≡-Reasoning
 
-open import lf-current.Basics using (_=?_; _<=?_; even; orb; andb; negb; negb-involutive; mult-n-suc-m; Bin; Z; B0; B1; incr; bin-to-nat)
+open import lf-current.Basics using
+  ( _=?_
+  ; _<=?_
+  ; even
+  ; orb
+  ; andb
+  ; negb
+  ; negb-involutive
+  ; mult-n-suc-m
+  ; Bin
+  ; Z
+  ; B0
+  ; B1
+  ; incr
+  ; bin-to-nat
+  )
 
 add-0-r : (n : ℕ) → n + 0 ≡ n
 add-0-r 0 = refl

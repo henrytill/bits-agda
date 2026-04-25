@@ -21,11 +21,11 @@
     "iowa-stdlib-src": {
       "flake": false,
       "locked": {
-        "lastModified": 1762885984,
-        "narHash": "sha256-+a36Vdd7lDYYAA92ObHzZes+UN93Q5yxmwKLji2Uc7w=",
+        "lastModified": 1776364062,
+        "narHash": "sha256-YW4O11S3crjbi/qKzCqkAkanrnlxtnUiNf5+EEpYVdM=",
         "owner": "cedille",
         "repo": "ial",
-        "rev": "24c48a186952247d297dbcb6723698a36eeb6b72",
+        "rev": "8eee15963451de2ed848526eada4ff5b3698d09e",
         "type": "github"
       },
       "original": {
@@ -36,11 +36,11 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1769740369,
-        "narHash": "sha256-xKPyJoMoXfXpDM5DFDZDsi9PHArf2k5BJjvReYXoFpM=",
+        "lastModified": 1776949667,
+        "narHash": "sha256-GMSVw35Q+294GlrTUKlx087E31z7KurReQ1YHSKp5iw=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "6308c3b21396534d8aaeac46179c14c439a89b8a",
+        "rev": "01fbdeef22b76df85ea168fbfe1bfd9e63681b30",
         "type": "github"
       },
       "original": {
